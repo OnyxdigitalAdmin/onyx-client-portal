@@ -5,7 +5,18 @@ name: Onyx Digital Client Portal
 description: Cyber compliance and insurance-readiness portal for regulated financial and medical services firms
 colors:
   primary: "#3f3fc1"
-  primary-deep: "#1818ac"
+  primary-dark: "#1818ac"
+  background: "#FAFAFC"
+  text: "#1E1B3A"
+  border: "#E2E1F0"
+  complete: "#2F9E6E"
+  attention: "#C68A2E"
+  error: "#B84C4C"
+typography:
+  display:
+    fontFamily: "\"Shree Devanagari 714\", sans-serif"
+  body:
+    fontFamily: "\"Shree Devanagari 714\", sans-serif"
 ---
 
 # Design System: Onyx Digital Client Portal
@@ -16,44 +27,57 @@ This is a brand-token seed, not a full visual-world decision. It carries the con
 
 The one confirmed directional constraint from `CLAUDE.md` is tone: **Clarity-First** — calm, plain-language, competent without being loud, the deliberate opposite of fear-based/red-dashboard/jargon-heavy cybersecurity vendor design. Future visual-world decisions must honor this, not contradict it.
 
+These tokens are the full approved palette and typeface for the build — they apply to every screen, including Onboarding Mode and Management Mode when they're built. Token names (`primary`, `primary-dark`, `background`, `text`, `border`, `complete`, `attention`, `error`) are chosen to map 1:1 onto future Tailwind theme colors (`bg-primary`, `text-attention`, etc.) once the app is scaffolded; no Tailwind config exists yet, so this file is the source of truth to wire in at that point.
+
 **Key Characteristics:**
-- Two confirmed brand blues (indigo family), no confirmed neutrals yet
-- Shree Devanagari 714 is reserved for specific pre-defined parts of the build (its Latin glyphs, per brand direction); the general UI typeface is still open
-- Calm, non-alarming register — no red/amber danger-styling as a default UI language
+- Full 8-color palette confirmed: two brand blues, three neutrals (background/text/border), three status colors (complete/attention/error)
+- Shree Devanagari 714 confirmed and approved as the typeface across the entire build — checked and renders standard Latin/English lettering correctly; no substitution needed
+- Calm, non-alarming register: status colors are deliberately muted (amber, not red, for "attention"; a muted red, not harsh, for "error") — this is not an alarm-based system
 
 ## Colors
 
-Only two colors are confirmed. Do not invent additional palette colors (backgrounds, grays, semantic success/warning/error colors) without confirming with the user first — see `brand/README.md`.
+Full approved palette. Supersedes any earlier partial version of this file.
 
 ### Primary
-- **Onyx Indigo** (`#3f3fc1`): the lighter of the two confirmed brand blues. Treated as the base primary/accent color pending further direction.
-
-### Secondary
-- **Onyx Indigo Deep** (`#1818ac`): the darker of the two confirmed brand blues. Relationship to Primary (hover/active state vs. an independent secondary accent) is not yet confirmed — treat as a closely related deep variant until specified otherwise.
+- **Onyx Indigo** (`#3f3fc1`): buttons, links, active states.
+- **Onyx Indigo Dark** (`#1818ac`): headers, emphasis.
 
 ### Neutral
-[to be resolved during implementation — no background, text, or border neutrals have been confirmed]
+- **Background** (`#FAFAFC`): page background.
+- **Text** (`#1E1B3A`): body copy.
+- **Border** (`#E2E1F0`): dividers, card edges.
+
+### Status
+- **Complete** (`#2F9E6E`): status = 100% / done.
+- **Attention** (`#C68A2E`): status = in progress / open items.
+- **Error** (`#B84C4C`): real errors only (e.g. failed login).
+
+### Named Rules
+**The No-Alarm Rule.** Attention is amber, not red — an open item or in-progress state is normal, not a warning. Error is a muted red, not a harsh one, and is reserved for actual failures (e.g. failed login), never for routine incomplete/in-progress status. Status color choice must never make a normal, expected state look like a system alarm.
 
 ## Typography
 
-**General UI typeface:** [to be resolved during implementation — not yet decided, may differ from Shree Devanagari 714]
+**Typeface:** "Shree Devanagari 714" (with sans-serif fallback), for both display and body text.
 
-**Shree Devanagari 714** (with sans-serif fallback) is confirmed for specific pre-defined parts of the build only — not adopted as the general display or body face. Which surfaces/roles use it is not yet specified; do not apply it broadly to all UI text. Uses its bundled Latin glyph set, per brand direction.
+**Character:** Confirmed and approved as the typeface for the entire build — checked and renders standard Latin/English lettering correctly. No substitution or fallback-face decision needed.
 
 ### Hierarchy
-[to be resolved during implementation — display/headline/title/body/label sizes, weights, line-heights, and which typeface(s) apply where have not been confirmed]
+[to be resolved during implementation — display/headline/title/body/label sizes, weights, and line-heights have not been confirmed]
 
 ## Do's and Don'ts
 
 ### Do:
-- **Do** use `#3f3fc1` and `#1818ac` as the only confirmed brand colors until more are established.
+- **Do** use the full approved 8-color palette above (`primary`, `primary-dark`, `background`, `text`, `border`, `complete`, `attention`, `error`) on every screen, including Onboarding Mode and Management Mode.
 - **Do** use `brand/logos/tri-bunny-white-transparent.png` on dark surfaces and `brand/logos/tri-bunny-logo-onyx-digital.png` (full color) on light surfaces.
 - **Do** use `brand/logos/onyx-digital-text-logo-with-bunnies-transparent.png` for wordmark + mark lockups, and `brand/logos/onyx-digital-logo-banner.png` for wide banner placements.
-- **Do** reserve "Shree Devanagari 714" for the specific pre-defined parts of the build it's confirmed for; the general UI typeface is still open and may differ.
-- **Do** keep the Clarity-First tone (calm, plain-language) in mind for any future color, motion, or component decisions layered onto these tokens.
+- **Do** use "Shree Devanagari 714" across the entire build — it's approved, not scoped to specific parts.
+- **Do** keep status colors muted (amber for attention, muted red for error) per the No-Alarm Rule — never substitute a harsher red or urgent styling.
+- **Do**, once the app is scaffolded, wire these exact token names into Tailwind's theme colors so components reference `bg-primary`, `text-attention`, etc. instead of hardcoded hex values.
 
 ### Don't:
-- **Don't** invent additional palette colors (neutrals, semantic colors, extra accents) without confirming with the user.
+- **Don't** invent additional palette colors beyond this approved set without confirming with the user.
 - **Don't** recolor, recompose, stretch, or distort the logo lockups in `brand/logos/`.
 - **Don't** use `brand/ui-reference/` images as literal specs to clone — they're direction/craft references only, reconciled with Clarity-First tone.
+- **Don't** use a bright/harsh red for errors or use red/orange for routine "in progress" status — that violates the No-Alarm Rule.
+- **Don't** hardcode hex values in component code once Tailwind theme colors exist — reference tokens by name.
 - **Don't** treat this file as complete — Layout, Elevation & Depth, Shapes, and Components are unresolved and must not be fabricated here.

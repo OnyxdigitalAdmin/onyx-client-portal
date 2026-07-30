@@ -11,11 +11,12 @@ A cyber-compliance and insurance-readiness client portal for Onyx Digital Securi
 Calm, plain-language, competent without being loud. The deliberate opposite of typical cybersecurity vendor design (fear-based, red dashboards, jargon-heavy). Every screen should reduce cognitive load, not add to it.
 
 ## Brand assets — use these everywhere, do not invent alternatives
-Canonical brand assets live in `brand/` at the project root (logos, font, color palette, UI/UX references). See `brand/README.md` for the full inventory. Key facts:
-- Core brand colors: `#3f3fc1` (lighter indigo/periwinkle) and `#1818ac` (darker indigo/blue), sampled from `brand/color-palette/color-palette.png`. Do not invent additional palette colors (backgrounds, grays, semantic colors) without confirming with the user.
-- `brand/fonts/Shree714.ttc` ("Shree Devanagari 714") is reserved for specific pre-defined parts of the build only, using its Latin glyphs — not the general UI typeface. The general typeface is still open and may differ; do not assume Shree everywhere.
+Canonical brand assets live in `brand/` at the project root (logos, font, color palette, UI/UX references). See `brand/README.md` and `DESIGN.md` (the impeccable-owned design system file) for the full inventory. Key facts:
+- Full approved color palette (applies to every screen, including Onboarding Mode and Management Mode): `primary` `#3f3fc1`, `primary-dark` `#1818ac`, `background` `#FAFAFC`, `text` `#1E1B3A`, `border` `#E2E1F0`, `complete` `#2F9E6E`, `attention` `#C68A2E` (amber, not red — not an alarm state), `error` `#B84C4C` (muted, real errors only). See `DESIGN.md` for the canonical, structured version.
+- `brand/fonts/Shree714.ttc` ("Shree Devanagari 714") is confirmed and approved as the typeface across the entire build — checked and renders standard Latin/English lettering correctly. No substitution needed.
 - Logo lockups: `brand/logos/` (use the white/transparent variant on dark surfaces, full-color/wordmark variants elsewhere).
 - `brand/ui-reference/landing-page-reference.png` and `brand/ui-reference/web-form-reference.png` are direction/craft references, not literal specs — reconcile with Clarity-First tone above.
+- Once the app is scaffolded, these tokens must be wired into Tailwind's theme colors so components reference `bg-primary`, `text-attention`, etc. — never hardcoded hex values.
 
 ## Two modes — this is the core structure of the app
 1. Onboarding Mode — shown before a client is fully onboarded. Only a milestone tracker is visible; everything else stays greyed out/locked, unlocking section by section as onboarding_stage advances.
