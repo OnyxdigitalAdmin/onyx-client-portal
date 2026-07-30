@@ -10,6 +10,13 @@ A cyber-compliance and insurance-readiness client portal for Onyx Digital Securi
 ## Tone & design philosophy — "Clarity-First" (internal name only, never expose this term to end users or in the UI)
 Calm, plain-language, competent without being loud. The deliberate opposite of typical cybersecurity vendor design (fear-based, red dashboards, jargon-heavy). Every screen should reduce cognitive load, not add to it.
 
+## Brand assets — use these everywhere, do not invent alternatives
+Canonical brand assets live in `brand/` at the project root (logos, font, color palette, UI/UX references). See `brand/README.md` for the full inventory. Key facts:
+- Core brand colors: `#3f3fc1` (lighter indigo/periwinkle) and `#1818ac` (darker indigo/blue), sampled from `brand/color-palette/color-palette.png`. Do not invent additional palette colors (backgrounds, grays, semantic colors) without confirming with the user.
+- Brand typeface: `brand/fonts/Shree714.ttc`.
+- Logo lockups: `brand/logos/` (use the white/transparent variant on dark surfaces, full-color/wordmark variants elsewhere).
+- `brand/ui-reference/landing-page-reference.png` and `brand/ui-reference/web-form-reference.png` are direction/craft references, not literal specs — reconcile with Clarity-First tone above.
+
 ## Two modes — this is the core structure of the app
 1. Onboarding Mode — shown before a client is fully onboarded. Only a milestone tracker is visible; everything else stays greyed out/locked, unlocking section by section as onboarding_stage advances.
 2. Management Mode — shown once onboarding is complete. Contains: Insurance Readiness Tracker (25/50/75/100%), Compliance Posture Indicator (e.g. "72% SEC compliant" + open items list if under 100%), a document library, and an evidence vault that generates a password-protected, expiring link for auditors/insurers.
