@@ -9,7 +9,7 @@ Source of truth for all visual/brand decisions on the client portal. Use these �
 - `onyx-digital-logo-banner.png` — wide banner lockup
 
 ## fonts/
-- `Shree714.ttc` — brand typeface (TrueType collection, 4 weights/styles)
+- `Shree714.ttc` — internally "Shree Devanagari 714" (TrueType collection, Regular/Bold/Italic/Bold Italic). Reserved for specific pre-defined parts of the build, using its bundled Latin glyphs — not the general UI typeface. The general typeface for the portal build is still open and may differ.
 
 ## color-palette/
 - `color-palette.png` — reference swatch sheet

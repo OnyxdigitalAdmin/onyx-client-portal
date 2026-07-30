@@ -13,7 +13,7 @@ Calm, plain-language, competent without being loud. The deliberate opposite of t
 ## Brand assets — use these everywhere, do not invent alternatives
 Canonical brand assets live in `brand/` at the project root (logos, font, color palette, UI/UX references). See `brand/README.md` for the full inventory. Key facts:
 - Core brand colors: `#3f3fc1` (lighter indigo/periwinkle) and `#1818ac` (darker indigo/blue), sampled from `brand/color-palette/color-palette.png`. Do not invent additional palette colors (backgrounds, grays, semantic colors) without confirming with the user.
-- Brand typeface: `brand/fonts/Shree714.ttc`.
+- `brand/fonts/Shree714.ttc` ("Shree Devanagari 714") is reserved for specific pre-defined parts of the build only, using its Latin glyphs — not the general UI typeface. The general typeface is still open and may differ; do not assume Shree everywhere.
 - Logo lockups: `brand/logos/` (use the white/transparent variant on dark surfaces, full-color/wordmark variants elsewhere).
 - `brand/ui-reference/landing-page-reference.png` and `brand/ui-reference/web-form-reference.png` are direction/craft references, not literal specs — reconcile with Clarity-First tone above.
 

@@ -6,11 +6,6 @@ description: Cyber compliance and insurance-readiness portal for regulated finan
 colors:
   primary: "#3f3fc1"
   primary-deep: "#1818ac"
-typography:
-  display:
-    fontFamily: "\"Shree Devanagari 714\", sans-serif"
-  body:
-    fontFamily: "\"Shree Devanagari 714\", sans-serif"
 ---
 
 # Design System: Onyx Digital Client Portal
@@ -23,7 +18,7 @@ The one confirmed directional constraint from `CLAUDE.md` is tone: **Clarity-Fir
 
 **Key Characteristics:**
 - Two confirmed brand blues (indigo family), no confirmed neutrals yet
-- Brand typeface: Shree Devanagari 714 (Latin glyphs used for UI text, per brand direction)
+- Shree Devanagari 714 is reserved for specific pre-defined parts of the build (its Latin glyphs, per brand direction); the general UI typeface is still open
 - Calm, non-alarming register — no red/amber danger-styling as a default UI language
 
 ## Colors
@@ -41,13 +36,12 @@ Only two colors are confirmed. Do not invent additional palette colors (backgrou
 
 ## Typography
 
-**Display Font:** "Shree Devanagari 714" (with sans-serif fallback)
-**Body Font:** "Shree Devanagari 714" (with sans-serif fallback)
+**General UI typeface:** [to be resolved during implementation — not yet decided, may differ from Shree Devanagari 714]
 
-**Character:** Confirmed as the brand typeface, used for Latin (English) UI text via its bundled Latin glyph set, not just its native Devanagari design. Weight/size hierarchy, letter-spacing, and line-height are not yet established.
+**Shree Devanagari 714** (with sans-serif fallback) is confirmed for specific pre-defined parts of the build only — not adopted as the general display or body face. Which surfaces/roles use it is not yet specified; do not apply it broadly to all UI text. Uses its bundled Latin glyph set, per brand direction.
 
 ### Hierarchy
-[to be resolved during implementation — display/headline/title/body/label sizes, weights, and line-heights have not been confirmed]
+[to be resolved during implementation — display/headline/title/body/label sizes, weights, line-heights, and which typeface(s) apply where have not been confirmed]
 
 ## Do's and Don'ts
 
@@ -55,7 +49,7 @@ Only two colors are confirmed. Do not invent additional palette colors (backgrou
 - **Do** use `#3f3fc1` and `#1818ac` as the only confirmed brand colors until more are established.
 - **Do** use `brand/logos/tri-bunny-white-transparent.png` on dark surfaces and `brand/logos/tri-bunny-logo-onyx-digital.png` (full color) on light surfaces.
 - **Do** use `brand/logos/onyx-digital-text-logo-with-bunnies-transparent.png` for wordmark + mark lockups, and `brand/logos/onyx-digital-logo-banner.png` for wide banner placements.
-- **Do** use "Shree Devanagari 714" for UI text per confirmed brand direction.
+- **Do** reserve "Shree Devanagari 714" for the specific pre-defined parts of the build it's confirmed for; the general UI typeface is still open and may differ.
 - **Do** keep the Clarity-First tone (calm, plain-language) in mind for any future color, motion, or component decisions layered onto these tokens.
 
 ### Don't:
