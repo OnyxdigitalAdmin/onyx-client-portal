@@ -1,11 +1,32 @@
-function App() {
+import { Navigate, Route, Routes } from 'react-router-dom'
+import LaunchGate from './routes/LaunchGate'
+import Login from './routes/Login'
+import Mfa from './routes/Mfa'
+import { ManagementMode, OnboardingMode } from './routes/ModePlaceholder'
+import PortalLayout from './routes/PortalLayout'
+import Welcome from './routes/Welcome'
+
+/**
+ * Phase 1 route table.
+ *
+ * The pre-auth sequence (launch → login → second factor) is public; every
+ * screen from the welcome hold onward sits under PortalLayout, which holds
+ * the session guard and the idle timeout.
+ */
+export default function App() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background">
-      {/* Phase 1 slot — the static launch/login sequence (see CLAUDE.md) lands
-          here and has not been designed yet. Intentionally left plain. */}
-      <p className="text-sm text-text/60">Login form — not built yet.</p>
-    </div>
+    <Routes>
+      <Route path="/" element={<LaunchGate />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/mfa" element={<Mfa />} />
+
+      <Route element={<PortalLayout />}>
+        <Route path="/welcome" element={<Welcome />} />
+        <Route path="/onboarding" element={<OnboardingMode />} />
+        <Route path="/management" element={<ManagementMode />} />
+      </Route>
+
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
   )
 }
-
-export default App

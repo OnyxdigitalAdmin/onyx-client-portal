@@ -54,7 +54,16 @@ The launch/login sequence is now fully static. No video, and no animated bunnies
 Building Phases 1-3 in a single Supabase project — no real client data exists yet, so no isolation risk. A second, clean production Supabase project gets created right before Phase 4 go-live. Do not build a second environment before then unless explicitly asked.
 
 ## Current status
-Phase 0 (backend/environment setup): COMPLETE. Phase 1 (static launch page + login sequence): IN PROGRESS — app scaffolded; brand palette wired into the Tailwind theme (`src/index.css`). The earlier Hyperframes intro animation has been removed from the build entirely (video, poster, player component and the `videos/onyx-brand-intro/` project are all gone) — see "Launch/login sequence — fully static" above for what replaces it. The three static screens and the login screen are not built yet. Do not build ahead of the current phase without being asked.
+Phase 0 (backend/environment setup): COMPLETE. Phase 1 (static launch page + login sequence): COMPLETE — the full sequence is built and polished: launch screen with a real loading bar, login form, TOTP verify + first-time enrollment, "Authenticating…", "Welcome aboard," and the idle-session timeout, plus placeholder pages for both modes. The earlier Hyperframes intro animation has been removed from the build entirely (video, poster, player component and the `videos/onyx-brand-intro/` project are all gone) — see "Launch/login sequence — fully static" above for what replaces it. Phase 2 (the real Onboarding Mode and Management Mode screens) is NOT started. Do not build ahead of the current phase without being asked.
+
+### Phase 1 implementation notes
+- Routing is `react-router-dom`. `src/routes/` holds the screens, `src/components/` the shared UI, `src/hooks/` the idle timeout and handheld detection, `src/lib/` the Supabase/MFA/client-context helpers.
+- `PortalLayout` guards everything after sign-in: it checks the session, resolves the company once via `client_users` → `clients`, and runs the idle timeout. Screens beneath it read the company with `usePortal()`.
+- Real column names (confirmed against the live database): `clients.company_name`, `clients.onboarding_stage`, `client_users.auth_user_id`, `client_users.client_id`.
+- The typeface ships as `public/fonts/ShreeDevanagari714-{Regular,Bold}.woff2`, extracted from `brand/fonts/Shree714.ttc` — browsers cannot load a `.ttc` collection via `@font-face`. Re-extract with fontTools if the source font ever changes.
+- `BrandField` compensates for the mark's padding: the bunnies occupy only the middle 43.8% × 35.2% of the PNG, so the raw image box overshoots what you can see by ~120px. Spacing utilities beneath it would otherwise be badly wrong.
+- `public/_redirects` gives Netlify the SPA rewrite, without which a refresh on `/login` 404s.
+- Password reset is deliberately absent: accounts are staff-provisioned, so a locked-out client contacts Onyx.
 
 ## Hard constraints — do not assume otherwise
 - The document library IS core in-scope functionality, not optional.

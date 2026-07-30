@@ -1,5 +1,25 @@
 @import "tailwindcss";
 
+/* Shree Devanagari 714 — the approved typeface for the whole build.
+   The source in brand/fonts/ is a .ttc collection, which browsers can't load
+   via @font-face, so the Regular and Bold faces are extracted to .woff2 here.
+   Regenerate with fontTools if brand/fonts/Shree714.ttc ever changes. */
+@font-face {
+  font-family: "Shree Devanagari 714";
+  src: url("/fonts/ShreeDevanagari714-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Shree Devanagari 714";
+  src: url("/fonts/ShreeDevanagari714-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
 /* Onyx Digital approved palette — the canonical source is DESIGN.md.
    Wired into Tailwind's theme so components reference tokens
    (bg-primary-dark, text-attention, border-border, …) and never raw hex.
@@ -13,4 +33,26 @@
   --color-complete: #2f9e6e;
   --color-attention: #c68a2e;
   --color-error: #b84c4c;
+
+  --font-sans: "Shree Devanagari 714", ui-sans-serif, system-ui, sans-serif;
+
+  /* The brand's fixed-copy letter-spacing. Applies to designed wordmark-like
+     text ("Authenticating…", "Welcome aboard,"), never to user data. */
+  --tracking-brand: -0.06em;
+}
+
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Shree runs optically loose at UI sizes. A slight global tightening settles
+     it without touching the two tracking values the design pins explicitly:
+     tracking-brand (-0.06em) for fixed brand copy, tracking-normal (0) for
+     user data such as the company name. */
+  body {
+    @apply bg-background text-text font-sans;
+    letter-spacing: -0.015em;
+  }
 }

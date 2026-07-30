@@ -45,3 +45,6 @@ dist-ssr
 .impeccable/live/deferred-svelte-component-accepts.json
 .impeccable/live/*.png
 # impeccable-ignore-end
+
+# Background-job worktrees (isolation disabled for this repo)
+.claude/worktrees/
