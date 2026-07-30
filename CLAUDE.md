@@ -29,7 +29,13 @@ Canonical brand assets live in `brand/` at the project root (logos, font, color 
 - Hosting: Netlify, auto-deploys from the GitHub main branch
 - Source control: GitHub, OnyxdigitalAdmin/onyx-client-portal (private)
 - Design skill: Impeccable (installed) — use /impeccable commands for UI polish
-- Motion/video: Hyperframes — ONLY for the Phase 1 pre-rendered launch/intro animation. It renders video, not interactive UI. Never use it for Mode 1 or Mode 2 screens.
+- Motion/video: Hyperframes and the bunny hop animation are DEFERRED / ON HOLD — not in current scope. A motion graphics designer will be engaged separately for this in a future phase. The Hyperframes skill stays installed in case it is useful once real assets exist later. Do not build video or motion work in this project in the meantime.
+
+## Launch/login sequence — fully static
+The launch/login sequence is now fully static. No video, and no animated bunnies anywhere in the current build.
+- Mark: `brand/logos/tri-bunny-logo-onyx-digital.png` — the bunnies-only mark, no wordmark — used as a plain static image.
+- Field: solid `#1818ac` (`primary-dark`) background behind it.
+- The same mark on the same background is reused across three screens: the launch/loading screen, the "Authenticating..." screen, and the "Welcome aboard" screen. They differ only in the text shown — never in motion.
 
 ## Database schema (already built and RLS-tested in Supabase — do not recreate)
 - clients — one row per client company. Key fields: vertical (RIA/CPA/Medical), onboarding_stage (1-6), compliance_score, insurance_readiness_pct, ghl_contact_id.
@@ -48,7 +54,7 @@ Canonical brand assets live in `brand/` at the project root (logos, font, color 
 Building Phases 1-3 in a single Supabase project — no real client data exists yet, so no isolation risk. A second, clean production Supabase project gets created right before Phase 4 go-live. Do not build a second environment before then unless explicitly asked.
 
 ## Current status
-Phase 0 (backend/environment setup): COMPLETE. Phase 1 (animated launch page + login sequence): IN PROGRESS — app scaffolded, login screen not yet built. Do not build ahead of the current phase without being asked.
+Phase 0 (backend/environment setup): COMPLETE. Phase 1 (static launch page + login sequence): IN PROGRESS — app scaffolded; brand palette wired into the Tailwind theme (`src/index.css`). The earlier Hyperframes intro animation has been removed from the build entirely (video, poster, player component and the `videos/onyx-brand-intro/` project are all gone) — see "Launch/login sequence — fully static" above for what replaces it. The three static screens and the login screen are not built yet. Do not build ahead of the current phase without being asked.
 
 ## Hard constraints — do not assume otherwise
 - The document library IS core in-scope functionality, not optional.

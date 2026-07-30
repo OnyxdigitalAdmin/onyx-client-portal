@@ -1,1 +1,16 @@
 @import "tailwindcss";
+
+/* Onyx Digital approved palette — the canonical source is DESIGN.md.
+   Wired into Tailwind's theme so components reference tokens
+   (bg-primary-dark, text-attention, border-border, …) and never raw hex.
+   Do not add colors here without confirming against DESIGN.md. */
+@theme {
+  --color-primary: #3f3fc1;
+  --color-primary-dark: #1818ac;
+  --color-background: #fafafc;
+  --color-text: #1e1b3a;
+  --color-border: #e2e1f0;
+  --color-complete: #2f9e6e;
+  --color-attention: #c68a2e;
+  --color-error: #b84c4c;
+}
