@@ -8,7 +8,7 @@ import { BrandField } from './BrandField'
 export function AuthenticatingScreen() {
   return (
     <BrandField>
-      <p aria-live="polite" className="mt-8 text-lg tracking-brand text-white/80">
+      <p aria-live="polite" className="mt-8 text-3xl tracking-brand text-white/80">
         Authenticating…
       </p>
     </BrandField>

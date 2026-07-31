@@ -25,9 +25,14 @@ export default function Welcome() {
     <BrandField>
       <div className="mt-8 text-center">
         {/* Fixed design copy carries the brand letter-spacing; the company
-            name is user data and sits at normal tracking. */}
-        <p className="text-lg tracking-brand text-white/75">Welcome aboard,</p>
-        <p className="mt-1 text-3xl tracking-normal text-white">{client.companyName}</p>
+            name is user data and sits at normal tracking. The greeting leads at
+            a larger size than the name it introduces, and the name is inset so
+            a long firm name wraps inside the column instead of running to the
+            gutters. */}
+        <p className="text-[2.0625rem] tracking-brand text-white/75">Welcome aboard,</p>
+        <p className="mt-1 px-[46px] text-[1.75rem] tracking-normal text-white">
+          {client.companyName}
+        </p>
       </div>
     </BrandField>
   )
