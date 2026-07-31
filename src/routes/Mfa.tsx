@@ -111,7 +111,12 @@ export default function Mfa() {
     return (
       <BrandField compact>
         <div className="mt-10 w-full max-w-[26rem]">
-          <ErrorNote>{blocked}</ErrorNote>
+          {/* Not an ErrorNote: enrolment failing to start is a systems problem,
+              not a rejected attempt. It gets stated plainly on the field rather
+              than plated in red — the wrong code still gets the Error note. */}
+          <p aria-live="polite" className="text-[1.375rem] leading-snug text-white">
+            {blocked}
+          </p>
           <Button
             type="button"
             className="mt-6 w-full"
@@ -133,7 +138,7 @@ export default function Mfa() {
       <div className="mt-10 w-full max-w-[26rem]">
         <div className="rounded-3xl border border-white/20 bg-white/[0.04] p-7 sm:p-9">
           <h1 className="text-2xl tracking-brand text-white">
-            {enrolling ? 'Set up your authenticator' : 'Verification code'}
+            {enrolling ? 'Set up your authenticator.' : 'Verification code'}
           </h1>
           <p className="mt-2 text-sm leading-relaxed text-white/65">
             {enrolling
