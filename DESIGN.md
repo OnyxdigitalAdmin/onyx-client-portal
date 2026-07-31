@@ -123,12 +123,12 @@ components:
 
 Clarity-First is an internal name — it belongs in this file and in code comments, never in the UI or in anything a client reads. It describes a system whose whole job is to lower the temperature of a subject that the category normally raises: a regulated firm's exposure, its audit posture, its insurability. Every decision here is made against the question "does this add load or remove it?"
 
-The system is deliberately quiet. It runs on one typeface at one weight, an eight-color palette, a single centred column, and one shadow in the entire build. Hierarchy is carried by size, opacity, and space rather than by weight, rule lines, or color — so when color does appear (an amber countdown, a muted red failure note) it means something. The pre-auth sequence is a single field of `primary-dark` with the tri-bunny mark pinned in place across four screens; moving through it reads as text changing rather than pages swapping, because nothing but the text does change.
+The system is deliberately quiet. It runs on one typeface at essentially one weight, an eight-color palette, a single centred column, and one shadow in the entire build. Hierarchy is carried by size, opacity, and space rather than by weight, rule lines, or color — so when color does appear (an amber countdown, a muted red failure note) it means something. The pre-auth sequence is a single field of `primary-dark`: sign-in opens on the wordmark lockup, and the tri-bunny mark then holds its position across launch, authenticating and welcome, so moving through them reads as text changing rather than pages swapping, because nothing but the text does change.
 
 Its confirmed anti-reference is its own category: fear-based cybersecurity vendor design — red dashboards, alarm styling, jargon, urgency as a persuasion device. Motion is a second anti-reference for now. Phase 1 shipped with no animation of any kind beyond a loading bar that tracks real work and CSS color transitions on interactive states; the earlier brand-intro video was removed from the build entirely.
 
 **Key Characteristics:**
-- One typeface, one weight: Shree Devanagari 714 at 400 carries every role from the 1.875rem company name to the 0.75rem footnote
+- One typeface, one weight: Shree Devanagari 714 at 400 carries every role from the company name to the 0.75rem footnote, with a single sanctioned Bold exception for the sign-in headline
 - One shadow in the system (the session-timeout dialog); every other surface is flat, layered tonally
 - Pill-first form language — buttons, inputs and the loading bar are fully round; containers are large soft radii; nothing is square
 - Two surfaces only: the `primary-dark` field (everything pre-auth) and the `background` page (everything post-auth)
@@ -173,6 +173,8 @@ The dark field has no second background color. Everything on it is white at a fi
 
 **The Light Plate Rule.** `error` reaches only ~2.4:1 against `primary-dark` and cannot be used as text on it. An error on the indigo field is rendered as a light `background` plate carrying `error` text — 4.8:1 — never as bare red type.
 
+**The Systems-Problem Exception.** The plate is for a failed *attempt* — a rejected sign-in, a rejected code — something the client did that did not work, and can retry. A failure of the system itself is not that. When two-factor enrolment cannot be started at all, the client has done nothing wrong and has nothing to retry, so the message is stated plainly in white brand copy on the field, with no plate, no border, and no red, and the way out sits beneath it as an ordinary button. Plating it would make an Onyx-side outage look like the client's mistake. This exception covers the blocked/setup-failure state only; every per-attempt failure keeps the error note.
+
 ## Typography
 
 **Typeface:** "Shree Devanagari 714" (fallbacks `ui-sans-serif`, `system-ui`, `sans-serif`), for display and body alike. Regular (400) and Bold (700) ship as `public/fonts/ShreeDevanagari714-{Regular,Bold}.woff2`, extracted from the `.ttc` collection in `brand/fonts/` because browsers cannot load a collection via `@font-face`.
@@ -183,20 +185,37 @@ The family name reads as Devanagari, but every face in the collection is dual-sc
 
 ### Hierarchy
 
-- **Display** (400, 1.875rem, 1.2, tracking `0`): the client's company name on the welcome screen. The only role at normal tracking, because it is user data.
-- **Headline** (400, 1.5rem, 1.333, tracking `-0.06em`): the title of an auth card — "Sign in", "Set up your authenticator", "Verification code".
+- **Display** (400, 1.875rem, 1.2, tracking `0`): the client's company name on the welcome screen. The only role at normal tracking, because it is user data. **Ships at 1.75rem** — see Pending: the brand-field scale.
+- **Headline** (400, 1.5rem, 1.333, tracking `-0.06em`): the title of an auth card — "Set up your authenticator.", "Verification code". The sign-in headline ("Log In.") is the one documented exception; see the Login Headline Exception below.
 - **Title** (400, 1.25rem, 1.4, tracking `-0.06em`): the session-timeout dialog heading.
-- **Lead** (400, 1.125rem, 1.556, tracking `-0.06em`): the single line of fixed brand copy on a full brand field — "Authenticating…", "Welcome aboard,".
+- **Lead** (400, 1.125rem, 1.556, tracking `-0.06em`): a single line of fixed brand copy. **Its two users — "Authenticating…" and "Welcome aboard," — now ship at 1.875rem and 2.0625rem**; see Pending: the brand-field scale.
 - **Body** (400, 1rem, 1.5, tracking `-0.015em`): the default. Input values sit here.
 - **Label** (400, 0.875rem, 1.43): field labels, supporting paragraphs, notes, quiet actions. Paragraphs at this size take `1.625` line-height when they run to multiple lines and `1.375` when they are a compact note. A 0.75rem step exists for one thing only: the fine print beneath the sign-in card.
 
 Two monospace-substitute treatments exist, both wide-tracked rather than a second family: the 6-digit code input (1.5rem, centred, `0.4em`) and the TOTP setup key (0.875rem, `0.16em`, grouped in fours). The countdown digits use `tabular-nums` so the timer does not jitter.
 
+### Pending: the brand-field scale
+
+A design review scaled up the copy on the two full-field screens, and the shipped code no longer matches the table above. What is live:
+
+| Screen | Text | Was | Now |
+| --- | --- | --- | --- |
+| Authenticating | "Authenticating…" | 1.125rem (Lead) | **1.875rem** |
+| Welcome | "Welcome aboard," | 1.125rem (Lead) | **2.0625rem** |
+| Welcome | company name | 1.875rem (Display) | **1.75rem** |
+| MFA blocked | setup-failure message | 0.875rem (Label, plated) | **1.375rem** |
+
+This is larger than a tweak. Lead as defined has no remaining users at 1.125rem, and Display is now *smaller* than the line introducing it — so "Display" no longer names the largest thing on screen, and the greeting outranks the company name it greets.
+
+The token table and the frontmatter are deliberately **unchanged pending a decision**, because renaming roles is a system-level call rather than a screen-level one. The cleanest expression, and the current proposal, is that the full-bleed field has its own two-step scale distinct from the card scale: a **Field Lead** role (~1.875–2.0625rem) for the single line of fixed brand copy, and **Display** dropping to 1.75rem as the user-data line beneath it — which also stops Display from being read as "the biggest text" and lets it mean what it actually is, the client's own name. `Lead` at 1.125rem then either retires or waits for a real user in Phase 2. Until that is settled, treat the values in this section as authoritative over the table.
+
 ### Named Rules
 
-**The One Weight Rule.** Every role in the system is 400. Hierarchy comes from size, opacity, and space — never from weight. The Bold face is loaded for the browser's benefit; reaching for it to make something feel more important is a defect, not an option.
+**The One Weight Rule.** Every role in the system is 400. Hierarchy comes from size, opacity, and space — never from weight. Reaching for the Bold face to make something feel more important is a defect, not an option. It has exactly one sanctioned use, below.
 
 **The Fixed-Copy Tracking Rule.** `tracking-brand` (`-0.06em`) belongs to designed, fixed copy — wordmark-like text the build authored. User data never receives it: the company name is explicitly reset to `tracking-normal`. Tightening someone's firm name is a typographic opinion applied to a fact.
+
+**The Login Headline Exception.** The sign-in headline — and only that headline — is set in Bold (700) at normal tracking (`0em`), against both rules above. It is the first typographic mark a client meets and the front door to the product, so it is allowed to be stated rather than murmured; the full stop in "Log In." is part of that. Because the Bold face of this family is a noticeably more conventional grotesque than its Regular, the exception also reads as a deliberate change of voice rather than a heavier version of the same one. It does not generalise: no other heading, label, or emphasis anywhere in the build takes 700, and nothing else drops `tracking-brand` in favour of normal except user data.
 
 ## Layout
 
@@ -215,6 +234,8 @@ Every surface built so far is a single centred column on a full-viewport (`min-h
 **The 26rem Rule.** Pre-auth content never exceeds `26rem`. A wider column would let the sign-in card compete with the mark for the centre of the field.
 
 **The Optical Box Rule.** The tri-bunny mark's artwork occupies only the middle 43.8% × 35.2% of its 2500px square; the rest is same-colored padding. `BrandField` cancels that bleed with negative margins so ordinary spacing utilities measure from the visible bunnies. Never place the raw image and then hand-tune the gap beneath it — spacing lands roughly 120px low.
+
+The rule is a property of that one square asset, not of brand imagery generally. The wordmark lockup (3907 × 634) is trimmed to its artwork and carries no padding, so it takes no correction at all; applying the negative margins to it would crop into the lettering. Before compensating any mark, check whether the file actually has bleed to cancel.
 
 ## Elevation & Depth
 
@@ -276,9 +297,9 @@ Borders are always hairlines (1px) and always low-contrast: `white/20` on a card
 Two registers, and choosing between them is a design decision, not a styling one:
 
 - **Neutral notice** (`0.75rem` radius, white/6 fill, white/25 border, white/80 text): expected, non-failure information — "You were signed out after 5 minutes of inactivity."
-- **Error note** (`0.75rem` radius, `background` plate, `error/35` border, `error` text, `role="alert"`): genuine failure only. It is a light plate on a dark field by necessity, per the Light Plate Rule.
+- **Error note** (`0.75rem` radius, `background` plate, `error/35` border, `error` text, `role="alert"`): a genuine, retryable failure of an attempt the client made. It is a light plate on a dark field by necessity, per the Light Plate Rule.
 
-An inactivity sign-out never renders as an error, and the two never appear at once.
+An inactivity sign-out never renders as an error, and the two never appear at once. A failure of the system rather than of an attempt takes neither register — it is stated plainly on the field, per the Systems-Problem Exception.
 
 ### Dialog
 
@@ -291,9 +312,14 @@ Used once, for "Can't scan? Enter this code manually". A native `<details>` with
 
 ### BrandField (signature component)
 
-The identity of the pre-auth sequence, and the reason it holds together. A full-viewport `primary-dark` field with the tri-bunny mark centred, offered in two sizes (full, and a `compact` variant for screens that also carry a form), with an optional slot for content beneath the mark and an optional pinned footer.
+The identity of the pre-auth sequence, and the reason it holds together. A full-viewport `primary-dark` field with an Onyx lockup centred, an optional slot for content beneath it, and an optional pinned footer.
 
-Four screens render it — launch, MFA, authenticating, welcome — and they differ **only in the text they pass in**. The mark's position is guaranteed identical because it is one component, so moving between screens reads as copy changing rather than a page loading. There is no motion in it anywhere.
+**Two lockups, one component.** `BrandField` owns every appearance of the mark in the sequence; nothing else places one.
+
+- **Tri-bunny** (default, `mark="bunnies"`): the bunnies-only square, in two sizes — full (`clamp(300px, 34vw, 460px)`) and a `compact` variant (`clamp(180px, 16vw, 220px)`) for screens that also carry a form. It gets the negative-margin bleed correction described in the Optical Box Rule, which applies to this asset and no other.
+- **Wordmark** (`mark="wordmark"`): the full "Onyx Digital" lettering with the bunnies, transparent, at `clamp(260px, 26vw, 340px)` with `height: auto`. No bleed correction — the file is trimmed to its artwork. It is sized on its own scale, so `compact` does not apply to it.
+
+**Where each is used.** Sign-in leads with the wordmark: it is the one screen a client can arrive at cold, from a bookmark or a link, and it should name the company outright rather than ask them to recognise a mark. Launch, authenticating and welcome all hold the tri-bunny, and they differ **only in the text they pass in** — the mark's position is guaranteed identical because it is one component, so moving between them reads as copy changing rather than a page loading. There is no motion in it anywhere.
 
 ### Progress bar
 
@@ -305,7 +331,7 @@ A 2px pill, capped at `22.5rem`, white/20 track with a solid white fill, pinned 
 - **Do** use the full approved 8-color palette (`primary`, `primary-dark`, `background`, `text`, `border`, `complete`, `attention`, `error`) on every screen, including Onboarding Mode and Management Mode.
 - **Do** reference Tailwind theme tokens (`bg-primary-dark`, `text-attention`, `border-border`) in component code. They are wired in `src/index.css` via `@theme`, and `DESIGN.md` is the canonical source those values come from.
 - **Do** use `brand/logos/tri-bunny-white-transparent.png` on dark surfaces, and `brand/logos/tri-bunny-logo-onyx-digital.png` (full color) on light surfaces. **Exception:** the launch, MFA, authenticating, and welcome screens use the full-color `tri-bunny-logo-onyx-digital.png` on their dark field, because that file's baked-in background is exactly `#1818ac` (`primary-dark`) and composites seamlessly with no visible edge at any size. The white/transparent variant remains the default rule for every other dark surface.
-- **Do** use `brand/logos/onyx-digital-text-logo-with-bunnies-transparent.png` for wordmark + mark lockups, and `brand/logos/onyx-digital-logo-banner.png` for wide banner placements.
+- **Do** use `brand/logos/onyx-digital-text-logo-with-bunnies-transparent.png` for wordmark + mark lockups — it is what the sign-in screen leads with, via `BrandField`'s `mark="wordmark"` — and `brand/logos/onyx-digital-logo-banner.png` for wide banner placements.
 - **Do** use "Shree Devanagari 714" at weight 400 across the entire build, per the One Weight Rule.
 - **Do** keep status colors muted (amber for attention, muted red for error) per the No-Alarm Rule — never substitute a harsher red or urgent styling.
 - **Do** give every interactive element a `focus-visible` ring with a 2px offset whose offset color matches the surface behind it (`primary-dark` on the field, `background` on light surfaces).
@@ -314,9 +340,9 @@ A 2px pill, capped at `22.5rem`, white/20 track with a solid white fill, pinned 
 
 ### Don't:
 - **Don't** invent additional palette colors beyond the approved set without confirming with the user.
-- **Don't** use font weight to create hierarchy. Use size, opacity, and space.
+- **Don't** use font weight to create hierarchy. Use size, opacity, and space. The sign-in headline is the sole documented exception (the Login Headline Exception) and does not license a second one.
 - **Don't** drop white below 60% for text or 45% for a control boundary on `primary-dark` — those are contrast floors, not preferences (the Opacity Floor Rule).
-- **Don't** render `error` as text directly on `primary-dark`; it only reaches ~2.4:1. Use the light plate.
+- **Don't** render `error` as text directly on `primary-dark`; it only reaches ~2.4:1. Use the light plate — or, when the failure is the system's rather than the client's, no failure styling at all (the Systems-Problem Exception).
 - **Don't** add a shadow to anything that is not a modal (the One Shadow Rule).
 - **Don't** put a bordered panel inside a card (the No Nested Card Rule).
 - **Don't** apply `tracking-brand` to user data such as a company name.
