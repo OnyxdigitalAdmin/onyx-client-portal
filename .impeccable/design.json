@@ -1,0 +1,351 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-07-30T00:00:00.000Z",
+  "title": "Design System: Onyx Digital Client Portal",
+  "extensions": {
+    "colorMeta": {
+      "primary": {
+        "role": "primary",
+        "displayName": "Onyx Indigo",
+        "canonical": "#3f3fc1",
+        "tonalRamp": [
+          "oklch(15% 0.08 275)",
+          "oklch(25% 0.13 275)",
+          "oklch(35% 0.17 275)",
+          "oklch(45% 0.20 275)",
+          "oklch(55% 0.19 275)",
+          "oklch(68% 0.15 275)",
+          "oklch(82% 0.09 275)",
+          "oklch(95% 0.03 275)"
+        ]
+      },
+      "primary-dark": {
+        "role": "primary",
+        "displayName": "Onyx Indigo Dark",
+        "canonical": "#1818ac",
+        "tonalRamp": [
+          "oklch(15% 0.09 272)",
+          "oklch(23% 0.15 272)",
+          "oklch(30% 0.19 272)",
+          "oklch(38% 0.22 272)",
+          "oklch(50% 0.21 272)",
+          "oklch(64% 0.16 272)",
+          "oklch(80% 0.10 272)",
+          "oklch(94% 0.03 272)"
+        ]
+      },
+      "background": {
+        "role": "neutral",
+        "displayName": "Portal Paper",
+        "canonical": "#FAFAFC",
+        "tonalRamp": [
+          "oklch(15% 0.004 285)",
+          "oklch(28% 0.004 285)",
+          "oklch(42% 0.004 285)",
+          "oklch(56% 0.004 285)",
+          "oklch(70% 0.004 285)",
+          "oklch(84% 0.004 285)",
+          "oklch(92% 0.004 285)",
+          "oklch(98% 0.004 285)"
+        ]
+      },
+      "text": {
+        "role": "neutral",
+        "displayName": "Deep Indigo Ink",
+        "canonical": "#1E1B3A",
+        "tonalRamp": [
+          "oklch(15% 0.05 285)",
+          "oklch(24% 0.05 285)",
+          "oklch(36% 0.05 285)",
+          "oklch(48% 0.05 285)",
+          "oklch(62% 0.04 285)",
+          "oklch(76% 0.03 285)",
+          "oklch(88% 0.02 285)",
+          "oklch(96% 0.01 285)"
+        ]
+      },
+      "border": {
+        "role": "neutral",
+        "displayName": "Pale Indigo Hairline",
+        "canonical": "#E2E1F0",
+        "tonalRamp": [
+          "oklch(15% 0.02 285)",
+          "oklch(28% 0.02 285)",
+          "oklch(42% 0.02 285)",
+          "oklch(56% 0.02 285)",
+          "oklch(70% 0.02 285)",
+          "oklch(82% 0.02 285)",
+          "oklch(90% 0.02 285)",
+          "oklch(96% 0.01 285)"
+        ]
+      },
+      "complete": {
+        "role": "tertiary",
+        "displayName": "Settled Green",
+        "canonical": "#2F9E6E",
+        "tonalRamp": [
+          "oklch(15% 0.04 160)",
+          "oklch(26% 0.06 160)",
+          "oklch(38% 0.09 160)",
+          "oklch(49% 0.11 160)",
+          "oklch(60% 0.12 160)",
+          "oklch(73% 0.10 160)",
+          "oklch(85% 0.06 160)",
+          "oklch(95% 0.02 160)"
+        ]
+      },
+      "attention": {
+        "role": "secondary",
+        "displayName": "Muted Amber",
+        "canonical": "#C68A2E",
+        "tonalRamp": [
+          "oklch(15% 0.04 75)",
+          "oklch(27% 0.06 75)",
+          "oklch(39% 0.09 75)",
+          "oklch(52% 0.11 75)",
+          "oklch(66% 0.12 75)",
+          "oklch(78% 0.10 75)",
+          "oklch(88% 0.06 75)",
+          "oklch(96% 0.02 75)"
+        ]
+      },
+      "error": {
+        "role": "tertiary",
+        "displayName": "Restrained Red",
+        "canonical": "#B84C4C",
+        "tonalRamp": [
+          "oklch(15% 0.04 25)",
+          "oklch(25% 0.07 25)",
+          "oklch(35% 0.10 25)",
+          "oklch(46% 0.12 25)",
+          "oklch(56% 0.13 25)",
+          "oklch(70% 0.10 25)",
+          "oklch(84% 0.06 25)",
+          "oklch(95% 0.02 25)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "The client's company name on the welcome screen. The only role at normal tracking, because it is user data rather than designed copy."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "The title of an auth card — \"Sign in\", \"Set up your authenticator\", \"Verification code\"."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "The session-timeout dialog heading."
+      },
+      "lead": {
+        "displayName": "Lead",
+        "purpose": "The single line of fixed brand copy on a full brand field — \"Authenticating…\", \"Welcome aboard,\"."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "The default register. Input values sit here."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Field labels, supporting paragraphs, notes and quiet actions. A 0.75rem step exists only for the fine print beneath the sign-in card."
+      }
+    },
+    "shadows": [
+      {
+        "name": "modal",
+        "value": "0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)",
+        "purpose": "The only shadow in the system. Belongs to the session-timeout dialog, the one element that sits above everything else. Nothing that is not a modal gets a shadow."
+      }
+    ],
+    "motion": [
+      {
+        "name": "state-transition",
+        "value": "color / background-color / border-color 150ms cubic-bezier(0.4, 0, 0.2, 1)",
+        "purpose": "The only motion in the build: color transitions on hover and focus for buttons, inputs, links and disclosure summaries. No transforms, no entrances, no page transitions."
+      },
+      {
+        "name": "progress-ease",
+        "value": "per-frame lerp toward target at 0.14, snapping within 0.005",
+        "purpose": "The launch bar's fill easing. Disabled under prefers-reduced-motion, where the bar jumps to its true value — the indicator stays, only the easing goes."
+      },
+      {
+        "name": "welcome-hold",
+        "value": "2000ms",
+        "purpose": "How long the welcome screen holds before routing to the client's mode."
+      },
+      {
+        "name": "launch-min-fill",
+        "value": "900ms, plus a 220ms hold at 100%",
+        "purpose": "The launch bar's elapsed-time floor, so a warm cache doesn't flash it, and a beat at full so completion is seen rather than vanishing."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "sm",
+        "value": "40rem"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The one affirmative action on a screen. Pill, lighter indigo on the dark field, white text at 7.8:1.",
+      "html": "<div class=\"ds-field\"><button class=\"ds-btn-primary\">Sign in</button></div>",
+      "css": ".ds-field { background: var(--color-primary-dark, #1818ac); padding: 24px; font-family: \"Shree Devanagari 714\", ui-sans-serif, system-ui, sans-serif; letter-spacing: -0.015em; } .ds-btn-primary { display: inline-flex; align-items: center; justify-content: center; background: var(--color-primary, #3f3fc1); color: #fff; font: inherit; font-size: 1rem; padding: 12px 24px; border: none; border-radius: 9999px; cursor: pointer; transition: background-color 150ms cubic-bezier(0.4, 0, 0.2, 1); } .ds-btn-primary:hover { background: rgb(63 63 193 / 0.85); } .ds-btn-primary:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--color-primary-dark, #1818ac), 0 0 0 4px rgb(255 255 255 / 0.6); } .ds-btn-primary:disabled { opacity: 0.55; cursor: not-allowed; background: var(--color-primary, #3f3fc1); }"
+    },
+    {
+      "name": "Quiet Button",
+      "kind": "button",
+      "refersTo": "button-quiet",
+      "description": "A low-emphasis text action on the dark field — underlined, no fill, resolving to full white on hover.",
+      "html": "<div class=\"ds-field\"><button class=\"ds-btn-quiet\">Copy setup key</button></div>",
+      "css": ".ds-btn-quiet { background: none; border: none; font: inherit; font-size: 0.875rem; line-height: 1.43; color: rgb(255 255 255 / 0.7); padding: 4px 0; text-decoration: underline; text-underline-offset: 4px; cursor: pointer; transition: color 150ms cubic-bezier(0.4, 0, 0.2, 1); } .ds-btn-quiet:hover, .ds-btn-quiet:focus-visible { color: #fff; outline: none; }"
+    },
+    {
+      "name": "Text Field",
+      "kind": "input",
+      "refersTo": "input-field",
+      "description": "A labelled pill input for the indigo pre-auth screens: transparent fill, thin white rule at the 3:1 contrast floor.",
+      "html": "<div class=\"ds-field\"><div class=\"ds-input-group\"><label class=\"ds-input-label\" for=\"ds-email\">Email</label><input class=\"ds-input\" id=\"ds-email\" type=\"email\" placeholder=\"you@yourfirm.com\"></div></div>",
+      "css": ".ds-input-group { display: flex; flex-direction: column; gap: 8px; max-width: 26rem; } .ds-input-label { font-size: 0.875rem; line-height: 1.43; color: rgb(255 255 255 / 0.85); } .ds-input { width: 100%; box-sizing: border-box; background: transparent; border: 1px solid rgb(255 255 255 / 0.45); border-radius: 9999px; padding: 12px 20px; font: inherit; font-size: 1rem; color: #fff; transition: border-color 150ms cubic-bezier(0.4, 0, 0.2, 1); } .ds-input::placeholder { color: rgb(255 255 255 / 0.6); } .ds-input:hover { border-color: rgb(255 255 255 / 0.7); } .ds-input:focus-visible { outline: none; border-color: #fff; box-shadow: 0 0 0 2px rgb(255 255 255 / 0.4); } .ds-input:disabled { opacity: 0.55; }"
+    },
+    {
+      "name": "Auth Card",
+      "kind": "card",
+      "refersTo": "card-auth",
+      "description": "The primary content container on the indigo field — a 4% white wash with a hairline edge, capped at 26rem. Flat: no shadow.",
+      "html": "<div class=\"ds-field\"><div class=\"ds-card\"><h1 class=\"ds-card-title\">Sign in</h1><p class=\"ds-card-sub\">Your compliance and insurance-readiness portal.</p></div></div>",
+      "css": ".ds-card { max-width: 26rem; background: rgb(255 255 255 / 0.04); border: 1px solid rgb(255 255 255 / 0.2); border-radius: 24px; padding: 28px; } @media (min-width: 40rem) { .ds-card { padding: 36px; } } .ds-card-title { margin: 0; font-size: 1.5rem; font-weight: 400; line-height: 1.333; letter-spacing: -0.06em; color: #fff; } .ds-card-sub { margin: 8px 0 0; font-size: 0.875rem; line-height: 1.625; color: rgb(255 255 255 / 0.65); }"
+    },
+    {
+      "name": "Error Note",
+      "kind": "custom",
+      "refersTo": "note-error",
+      "description": "A genuine failure. A light plate carrying Error text, because Error red only reaches ~2.4:1 directly on the indigo field.",
+      "html": "<div class=\"ds-field\"><p class=\"ds-note-error\" role=\"alert\">That email or password isn’t right. Please try again.</p></div>",
+      "css": ".ds-note-error { max-width: 26rem; margin: 0; background: var(--color-background, #FAFAFC); border: 1px solid rgb(184 76 76 / 0.35); border-radius: 12px; padding: 12px 16px; font-size: 0.875rem; line-height: 1.375; color: var(--color-error, #B84C4C); }"
+    },
+    {
+      "name": "Neutral Notice",
+      "kind": "custom",
+      "refersTo": "note-neutral",
+      "description": "Expected, non-failure information — an inactivity sign-out. Stays in the calm register rather than the Error one.",
+      "html": "<div class=\"ds-field\"><p class=\"ds-note-neutral\">You were signed out after 5 minutes of inactivity. Please sign in again.</p></div>",
+      "css": ".ds-note-neutral { max-width: 26rem; margin: 0; background: rgb(255 255 255 / 0.06); border: 1px solid rgb(255 255 255 / 0.25); border-radius: 12px; padding: 12px 16px; font-size: 0.875rem; line-height: 1.375; color: rgb(255 255 255 / 0.8); }"
+    },
+    {
+      "name": "Session Timeout Dialog",
+      "kind": "custom",
+      "refersTo": "dialog-session",
+      "description": "The only overlay in the system, and the only element that carries a shadow. Countdown in Attention amber, never Error red.",
+      "html": "<div class=\"ds-dialog\"><h2 class=\"ds-dialog-title\">Still there?</h2><p class=\"ds-dialog-body\">You’ve been idle for a while. For your security we’ll sign you out in <span class=\"ds-dialog-count\">1:24</span>.</p><button class=\"ds-dialog-action\">Stay signed in</button></div>",
+      "css": ".ds-dialog { box-sizing: border-box; width: min(26rem, 100% - 32px); background: var(--color-background, #FAFAFC); color: var(--color-text, #1E1B3A); border: 1px solid var(--color-border, #E2E1F0); border-radius: 16px; padding: 28px; box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1); font-family: \"Shree Devanagari 714\", ui-sans-serif, system-ui, sans-serif; letter-spacing: -0.015em; } .ds-dialog-title { margin: 0; font-size: 1.25rem; font-weight: 400; line-height: 1.4; letter-spacing: -0.06em; } .ds-dialog-body { margin: 12px 0 0; font-size: 0.875rem; line-height: 1.625; color: rgb(30 27 58 / 0.75); } .ds-dialog-count { font-variant-numeric: tabular-nums; color: var(--color-attention, #C68A2E); } .ds-dialog-action { margin-top: 24px; width: 100%; background: var(--color-primary, #3f3fc1); color: #fff; font: inherit; font-size: 1rem; border: none; border-radius: 9999px; padding: 12px 24px; cursor: pointer; transition: background-color 150ms cubic-bezier(0.4, 0, 0.2, 1); } .ds-dialog-action:hover { background: var(--color-primary-dark, #1818ac); } .ds-dialog-action:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--color-background, #FAFAFC), 0 0 0 4px var(--color-primary, #3f3fc1); }"
+    },
+    {
+      "name": "Launch Progress Bar",
+      "kind": "custom",
+      "refersTo": "progress-track",
+      "description": "A 2px pill pinned to the bottom of the launch field. Tracks real work — font load, mark decode, session restore — not a fake timer.",
+      "html": "<div class=\"ds-field ds-field-center\"><div class=\"ds-progress\" role=\"progressbar\" aria-label=\"Loading the Onyx Digital client portal\" aria-valuemin=\"0\" aria-valuemax=\"100\" aria-valuenow=\"62\"><div class=\"ds-progress-fill\"></div></div></div>",
+      "css": ".ds-field-center { display: flex; justify-content: center; padding-top: 40px; padding-bottom: 40px; } .ds-progress { width: 100%; max-width: 22.5rem; height: 2px; overflow: hidden; border-radius: 9999px; background: rgb(255 255 255 / 0.2); } .ds-progress-fill { height: 100%; width: 62%; border-radius: 9999px; background: #fff; }"
+    },
+    {
+      "name": "Disclosure",
+      "kind": "custom",
+      "refersTo": "note-neutral",
+      "description": "A native details/summary with the marker removed, separated by a top hairline. Used for the manual TOTP setup key.",
+      "html": "<div class=\"ds-field\"><details class=\"ds-disclosure\" open><summary class=\"ds-disclosure-summary\">Can’t scan? Enter this code manually</summary><p class=\"ds-disclosure-key\">JBSW Y3DP EHPK 3PXP</p></details></div>",
+      "css": ".ds-disclosure { max-width: 26rem; border-top: 1px solid rgb(255 255 255 / 0.2); padding-top: 20px; } .ds-disclosure-summary { list-style: none; cursor: pointer; font-size: 0.875rem; line-height: 1.43; color: rgb(255 255 255 / 0.7); transition: color 150ms cubic-bezier(0.4, 0, 0.2, 1); } .ds-disclosure-summary::-webkit-details-marker { display: none; } .ds-disclosure-summary:hover, .ds-disclosure-summary:focus-visible { color: #fff; outline: none; } .ds-disclosure-key { margin: 16px 0 0; font-size: 0.875rem; line-height: 1.625; letter-spacing: 0.16em; color: #fff; user-select: all; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "Clarity-First",
+    "overview": "Clarity-First is an internal name — it belongs in this file and in code comments, never in the UI or in anything a client reads. It describes a system whose whole job is to lower the temperature of a subject that the category normally raises: a regulated firm's exposure, its audit posture, its insurability. Every decision here is made against the question \"does this add load or remove it?\"\n\nThe system is deliberately quiet. It runs on one typeface at one weight, an eight-color palette, a single centred column, and one shadow in the entire build. Hierarchy is carried by size, opacity, and space rather than by weight, rule lines, or color — so when color does appear (an amber countdown, a muted red failure note) it means something. The pre-auth sequence is a single field of primary-dark with the tri-bunny mark pinned in place across four screens; moving through it reads as text changing rather than pages swapping, because nothing but the text does change.\n\nIts confirmed anti-reference is its own category: fear-based cybersecurity vendor design — red dashboards, alarm styling, jargon, urgency as a persuasion device. Motion is a second anti-reference for now. Phase 1 shipped with no animation of any kind beyond a loading bar that tracks real work and CSS color transitions on interactive states; the earlier brand-intro video was removed from the build entirely.",
+    "keyCharacteristics": [
+      "One typeface, one weight: Shree Devanagari 714 at 400 carries every role from the 1.875rem company name to the 0.75rem footnote",
+      "One shadow in the system (the session-timeout dialog); every other surface is flat, layered tonally",
+      "Pill-first form language — buttons, inputs and the loading bar are fully round; containers are large soft radii; nothing is square",
+      "Two surfaces only: the primary-dark field (everything pre-auth) and the background page (everything post-auth)",
+      "Depth and hierarchy on the dark field come from white at measured opacities, with published contrast floors",
+      "Calm status register: amber for attention, muted red reserved for genuine failure"
+    ],
+    "rules": [
+      {
+        "name": "The No-Alarm Rule",
+        "body": "Attention is amber, not red — an open item or in-progress state is normal, not a warning. Error is a muted red, not a harsh one, and is reserved for actual failures, never for routine incomplete or in-progress status. An expected event (an idle sign-out, an unfinished onboarding stage) must never be styled as a system alarm.",
+        "section": "colors"
+      },
+      {
+        "name": "The Opacity Floor Rule",
+        "body": "On primary-dark, white/60 is the floor for text and white/45 is the floor for a control boundary. Lowering either fails WCAG on this background. These are not stylistic dials.",
+        "section": "colors"
+      },
+      {
+        "name": "The Light Plate Rule",
+        "body": "Error reaches only ~2.4:1 against primary-dark and cannot be used as text on it. An error on the indigo field is rendered as a light background plate carrying error text — 4.8:1 — never as bare red type.",
+        "section": "colors"
+      },
+      {
+        "name": "The One Weight Rule",
+        "body": "Every role in the system is 400. Hierarchy comes from size, opacity, and space — never from weight. The Bold face is loaded for the browser's benefit; reaching for it to make something feel more important is a defect, not an option.",
+        "section": "typography"
+      },
+      {
+        "name": "The Fixed-Copy Tracking Rule",
+        "body": "tracking-brand (-0.06em) belongs to designed, fixed copy — wordmark-like text the build authored. User data never receives it: the company name is explicitly reset to tracking-normal. Tightening someone's firm name is a typographic opinion applied to a fact.",
+        "section": "typography"
+      },
+      {
+        "name": "The 26rem Rule",
+        "body": "Pre-auth content never exceeds 26rem. A wider column would let the sign-in card compete with the mark for the centre of the field.",
+        "section": "layout"
+      },
+      {
+        "name": "The Optical Box Rule",
+        "body": "The tri-bunny mark's artwork occupies only the middle 43.8% × 35.2% of its 2500px square; the rest is same-colored padding. BrandField cancels that bleed with negative margins so ordinary spacing utilities measure from the visible bunnies. Never place the raw image and then hand-tune the gap beneath it — spacing lands roughly 120px low.",
+        "section": "layout"
+      },
+      {
+        "name": "The One Shadow Rule",
+        "body": "There is exactly one shadow in this design system, and it belongs to the modal dialog. Any new surface that wants a shadow should be asked whether it is really a modal. If it is not, it gets a hairline border and a tonal fill instead.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Pill Rule",
+        "body": "If a user can click, type in, or watch it fill, it is fully round. A square-cornered button or input is out of system, no matter what it does.",
+        "section": "shapes"
+      },
+      {
+        "name": "The No Nested Card Rule",
+        "body": "A bordered panel inside a card reads as a second card and flattens the hierarchy the card just established. Content that needs distinction inside a card gets a top rule and spacing, or sits directly on the card surface — as the TOTP setup key does.",
+        "section": "shapes"
+      }
+    ],
+    "dos": [
+      "Do use the full approved 8-color palette (primary, primary-dark, background, text, border, complete, attention, error) on every screen, including Onboarding Mode and Management Mode.",
+      "Do reference Tailwind theme tokens (bg-primary-dark, text-attention, border-border) in component code. They are wired in src/index.css via @theme, and DESIGN.md is the canonical source those values come from.",
+      "Do use brand/logos/tri-bunny-white-transparent.png on dark surfaces, and brand/logos/tri-bunny-logo-onyx-digital.png (full color) on light surfaces. Exception: the launch, MFA, authenticating, and welcome screens use the full-color tri-bunny-logo-onyx-digital.png on their dark field, because that file's baked-in background is exactly #1818ac (primary-dark) and composites seamlessly with no visible edge at any size. The white/transparent variant remains the default rule for every other dark surface.",
+      "Do use brand/logos/onyx-digital-text-logo-with-bunnies-transparent.png for wordmark + mark lockups, and brand/logos/onyx-digital-logo-banner.png for wide banner placements.",
+      "Do use \"Shree Devanagari 714\" at weight 400 across the entire build, per the One Weight Rule.",
+      "Do keep status colors muted (amber for attention, muted red for error) per the No-Alarm Rule — never substitute a harsher red or urgent styling.",
+      "Do give every interactive element a focus-visible ring with a 2px offset whose offset color matches the surface behind it (primary-dark on the field, background on light surfaces).",
+      "Do hold the same surface across a transition rather than flashing white — a screen that is still resolving renders BrandField with no content.",
+      "Do honor prefers-reduced-motion by removing easing, not by removing information."
+    ],
+    "donts": [
+      "Don't invent additional palette colors beyond the approved set without confirming with the user.",
+      "Don't use font weight to create hierarchy. Use size, opacity, and space.",
+      "Don't drop white below 60% for text or 45% for a control boundary on primary-dark — those are contrast floors, not preferences (the Opacity Floor Rule).",
+      "Don't render error as text directly on primary-dark; it only reaches ~2.4:1. Use the light plate.",
+      "Don't add a shadow to anything that is not a modal (the One Shadow Rule).",
+      "Don't put a bordered panel inside a card (the No Nested Card Rule).",
+      "Don't apply tracking-brand to user data such as a company name.",
+      "Don't recolor, recompose, stretch, or distort the logo lockups in brand/logos/, or lay the mark out without cancelling its optical bleed (the Optical Box Rule).",
+      "Don't use brand/ui-reference/ images as literal specs to clone — they're direction/craft references only, reconciled with the Clarity-First tone.",
+      "Don't add motion, video, or animated bunnies to the launch/login sequence. It is fully static by decision, and a motion designer will be engaged separately in a later phase."
+    ]
+  }
+}
