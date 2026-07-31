@@ -3,7 +3,9 @@
 /* Shree Devanagari 714 — the approved typeface for the whole build.
    The source in brand/fonts/ is a .ttc collection, which browsers can't load
    via @font-face, so the Regular and Bold faces are extracted to .woff2 here.
-   Regenerate with fontTools if brand/fonts/Shree714.ttc ever changes. */
+   Regenerate with scripts/extract-brand-fonts.py — never by copying the source
+   tables verbatim, which reproduces the malformed cmap the browser rejects.
+   See that script's docstring for the full explanation. */
 @font-face {
   font-family: "Shree Devanagari 714";
   src: url("/fonts/ShreeDevanagari714-Regular.woff2") format("woff2");

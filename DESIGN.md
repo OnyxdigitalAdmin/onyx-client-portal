@@ -177,6 +177,8 @@ The dark field has no second background color. Everything on it is white at a fi
 
 **Typeface:** "Shree Devanagari 714" (fallbacks `ui-sans-serif`, `system-ui`, `sans-serif`), for display and body alike. Regular (400) and Bold (700) ship as `public/fonts/ShreeDevanagari714-{Regular,Bold}.woff2`, extracted from the `.ttc` collection in `brand/fonts/` because browsers cannot load a collection via `@font-face`.
 
+The family name reads as Devanagari, but every face in the collection is dual-script: 345 mapped codepoints, of which 196 are Latin and 126 Devanagari, with all 52 A–Z/a–z and all ten digits carrying real outlines. There is no separate Latin-only face to extract — the four faces in the collection are Regular, Bold, Italic and Bold Italic of this one family. Regenerate only with `scripts/extract-brand-fonts.py`, which repairs the malformed `cmap` and `gasp` tables Apple ships in the source; a verbatim table copy produces a file the browser refuses to decode.
+
 **Character:** Warm, slightly wide, and optically loose at UI sizes — which is why the system tightens it globally by `-0.015em` on `body` and pins two exceptions explicitly rather than letting tracking drift per-component.
 
 ### Hierarchy
