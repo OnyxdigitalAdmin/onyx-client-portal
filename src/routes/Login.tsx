@@ -53,10 +53,13 @@ export default function Login() {
   }
 
   return (
-    <BrandField compact>
+    <BrandField compact mark="wordmark">
       <div className="mt-10 w-full max-w-[26rem]">
         <div className="rounded-3xl border border-white/20 bg-white/[0.04] p-7 sm:p-9">
-          <h1 className="text-2xl tracking-brand text-white">Sign in</h1>
+          {/* The one headline in the system that takes Bold and normal tracking
+              — a named exception to the One Weight and Fixed-Copy Tracking
+              rules, recorded in DESIGN.md. It is the front door, not a pattern. */}
+          <h1 className="text-2xl font-bold tracking-normal text-white">Log In.</h1>
           <p className="mt-2 text-sm leading-relaxed text-white/65">
             Your compliance and insurance-readiness portal.
           </p>
@@ -108,10 +111,21 @@ export default function Login() {
         </div>
 
         {/* Accounts are provisioned by Onyx at kickoff — there is no self-serve
-            signup and no self-serve reset, so the way back in is a person. */}
-        <p className="mt-6 px-2 text-center text-xs leading-relaxed text-white/60">
-          Accounts are set up by Onyx Digital. If you’re locked out, get in touch and
-          we’ll sort it out.
+            signup and no self-serve reset, so the way back in is a person, and
+            the address has to be legible: full white rather than the fine-print
+            60%. The link inherits its colour so it reads identically at rest. */}
+        <p className="mt-6 px-2 text-center text-xs leading-relaxed text-white">
+          Accounts are set up by Onyx Digital. If you’re locked out, contact{' '}
+          <a
+            href="mailto:info@onyxdigitalsecurity.com"
+            className={[
+              'rounded text-inherit no-underline underline-offset-2 transition-all hover:underline',
+              'outline-none focus-visible:ring-2 focus-visible:ring-white/60',
+              'focus-visible:ring-offset-2 focus-visible:ring-offset-primary-dark',
+            ].join(' ')}
+          >
+            info@onyxdigitalsecurity.com
+          </a>
         </p>
       </div>
     </BrandField>
