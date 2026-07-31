@@ -31,6 +31,21 @@ Canonical brand assets live in `brand/` at the project root (logos, font, color 
 - Design skill: Impeccable (installed) — use /impeccable commands for UI polish
 - Motion/video: Hyperframes and the bunny hop animation are DEFERRED / ON HOLD — not in current scope. A motion graphics designer will be engaged separately for this in a future phase. The Hyperframes skill stays installed in case it is useful once real assets exist later. Do not build video or motion work in this project in the meantime.
 
+## Shipping — confirm the push landed before calling anything done
+Netlify auto-deploys from GitHub `main`, so **local commits change nothing that anyone can see.** A commit that was never pushed means the live site keeps serving stale code while the repo looks correct — this project has hit that exact bug twice, most recently a font fix that sat unpushed while every client-facing 400-weight role silently fell back to the Bold face in production.
+
+At the end of any session where changes were committed, verifying the gap is closed is a **required last step, not an optional courtesy**:
+
+```
+git fetch origin
+git rev-parse HEAD origin/main     # the two hashes must be identical
+git log --oneline origin/main..HEAD # must print nothing
+```
+
+- Do this even when the session's own commits were pushed — earlier unpushed commits from a previous session can still be sitting in front of them, which is precisely how this happened.
+- Never report work as complete, shipped, live, or deployed on the strength of a commit alone. "Committed" and "deployed" are different claims; only make the second one after the hashes match.
+- If they don't match, say so plainly and push (this repo commits straight to `main` — no branches, no PRs), or state clearly that the work is committed but NOT live.
+
 ## Launch/login sequence — fully static
 The launch/login sequence is now fully static. No video, and no animated bunnies anywhere in the current build.
 - Mark: `brand/logos/tri-bunny-logo-onyx-digital.png` — the bunnies-only mark, no wordmark — used as a plain static image.
