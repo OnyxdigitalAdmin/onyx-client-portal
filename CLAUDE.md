@@ -29,6 +29,7 @@ Canonical brand assets live in `brand/` at the project root (logos, font, color 
 - Hosting: Netlify, auto-deploys from the GitHub main branch
 - Source control: GitHub, OnyxdigitalAdmin/onyx-client-portal (private)
 - Design skill: Impeccable (installed) — use /impeccable commands for UI polish
+- Code-minimalism skill: Ponytail (installed, https://github.com/DietrichGebert/ponytail) — pushes toward the leanest working solution (YAGNI → stdlib → native → existing dep → one-liner) to cut token/build bloat when this project resumes. Not active by default; invoke with "ponytail" or `/ponytail [lite|full|ultra]`. Companion one-shot commands: `/ponytail-review` (diff-only over-engineering review), `/ponytail-audit` (whole-repo bloat scan), `/ponytail-debt` (lists deliberate `ponytail:` shortcut comments), `/ponytail-help`, `/ponytail-gain`.
 - Motion/video: Hyperframes and the bunny hop animation are DEFERRED / ON HOLD — not in current scope. A motion graphics designer will be engaged separately for this in a future phase. The Hyperframes skill stays installed in case it is useful once real assets exist later. Do not build video or motion work in this project in the meantime.
 
 ## Shipping — confirm the push landed before calling anything done
