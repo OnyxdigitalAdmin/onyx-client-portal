@@ -9,7 +9,6 @@
       "Bash(git check-ignore *)",
       "Bash(xxd *)",
       "Bash(npm run lint)",
-      "Bash(ffprobe *)",
       "Bash(brew list *)",
       "Bash(brew --version)"
     ]
