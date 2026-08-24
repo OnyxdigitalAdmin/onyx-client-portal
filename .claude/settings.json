@@ -1,5 +1,31 @@
 {
   "worktree": {
     "bgIsolation": "none"
+  },
+  "permissions": {
+    "allow": [
+      "Bash(git ls-tree *)",
+      "Bash(git fetch *)",
+      "Bash(git check-ignore *)",
+      "Bash(xxd *)",
+      "Bash(npm run lint)",
+      "Bash(ffprobe *)",
+      "Bash(brew list *)",
+      "Bash(brew --version)"
+    ]
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "jq -Rs '{hookSpecificOutput:{hookEventName:\"SessionStart\",additionalContext:(\"Ponytail is ON by default in this project, at full intensity. Its rules are in force for every response this session unless the user turns it off (stop ponytail / normal mode). Skill body follows:\\n\\n\" + .)}}' \"${CLAUDE_PROJECT_DIR:-.}/.claude/skills/ponytail/SKILL.md\"",
+            "timeout": 10,
+            "statusMessage": "Loading ponytail (full)"
+          }
+        ]
+      }
+    ]
   }
 }
