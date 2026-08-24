@@ -3,13 +3,12 @@ import { supabase } from '../lib/supabaseClient'
 import { usePortal } from '../hooks/usePortal'
 
 /**
- * Stand-in for Onboarding Mode and Management Mode.
+ * Stand-in for Management Mode, which Phase 3 builds.
  *
- * Phase 1 ends at the door of these two screens, so they only name the mode
- * and the company. The sign-out is here purely so the session has a way out
- * while the real screens don't exist yet.
+ * It only names the mode and the company. The sign-out is here purely so the
+ * session has a way out while the real screen doesn't exist yet.
  */
-export function ModePlaceholder({ mode }: { mode: 'Onboarding' | 'Management' }) {
+export function ModePlaceholder({ mode }: { mode: 'Management' }) {
   const navigate = useNavigate()
   const { client } = usePortal()
 
@@ -35,10 +34,6 @@ export function ModePlaceholder({ mode }: { mode: 'Onboarding' | 'Management' })
       </button>
     </main>
   )
-}
-
-export function OnboardingMode() {
-  return <ModePlaceholder mode="Onboarding" />
 }
 
 export function ManagementMode() {

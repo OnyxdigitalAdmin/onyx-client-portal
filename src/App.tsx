@@ -2,7 +2,8 @@ import { Navigate, Route, Routes } from 'react-router-dom'
 import LaunchGate from './routes/LaunchGate'
 import Login from './routes/Login'
 import Mfa from './routes/Mfa'
-import { ManagementMode, OnboardingMode } from './routes/ModePlaceholder'
+import Onboarding from './routes/Onboarding'
+import { ManagementMode } from './routes/ModePlaceholder'
 import PortalLayout from './routes/PortalLayout'
 import Welcome from './routes/Welcome'
 
@@ -22,7 +23,7 @@ export default function App() {
 
       <Route element={<PortalLayout />}>
         <Route path="/welcome" element={<Welcome />} />
-        <Route path="/onboarding" element={<OnboardingMode />} />
+        <Route path="/onboarding" element={<Onboarding />} />
         <Route path="/management" element={<ManagementMode />} />
       </Route>
 

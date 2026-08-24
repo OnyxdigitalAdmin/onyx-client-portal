@@ -173,6 +173,10 @@ The dark field has no second background color. Everything on it is white at a fi
 
 **The Light Plate Rule.** `error` reaches only ~2.4:1 against `primary-dark` and cannot be used as text on it. An error on the indigo field is rendered as a light `background` plate carrying `error` text — 4.8:1 — never as bare red type.
 
+**The Text Floor Rule (light surfaces).** The dark field's opacity ladder does not transfer. Against `background`, `text` at 60% reaches only 4.35:1 and fails; **`text/65` (5.10:1) is the floor for any text**, with `text/70` (6.02:1) the working value for secondary copy and full `text` for primary. Onboarding Mode's muted registers — an upcoming stage, a completion date, an "Included with Management" note — all sit at 65% or above. Recede information by size, space and marker colour, never by dropping type below the floor.
+
+**The Amber Wash Rule.** `attention` reaches only 2.85:1 on `background` — below even the 3:1 floor for a graphical object, and far below body text. On a light surface it therefore never appears as coloured type. It carries as a **wash behind full-contrast text** (`bg-attention/15` with `text`, pill-shaped): the overdue questionnaire date and a pending-signature count are both rendered this way. This is the light-surface counterpart of the Light Plate Rule, and it keeps the No-Alarm Rule intact — the flag stays amber, and the words stay readable. Where amber is only a supporting cue and the copy already states the fact ("· In progress"), an `attention` dot may accompany full-contrast text; the colour is then decorative and carries no meaning on its own.
+
 **The Systems-Problem Exception.** The plate is for a failed *attempt* — a rejected sign-in, a rejected code — something the client did that did not work, and can retry. A failure of the system itself is not that. When two-factor enrolment cannot be started at all, the client has done nothing wrong and has nothing to retry, so the message is stated plainly in white brand copy on the field, with no plate, no border, and no red, and the way out sits beneath it as an ordinary button. Plating it would make an Onyx-side outage look like the client's mistake. This exception covers the blocked/setup-failure state only; every per-attempt failure keeps the error note.
 
 ## Typography
@@ -191,6 +195,12 @@ The family name reads as Devanagari, but every face in the collection is dual-sc
 - **Lead** (400, 1.125rem, 1.556, tracking `-0.06em`): a single line of fixed brand copy. **Its two users — "Authenticating…" and "Welcome aboard," — now ship at 1.875rem and 2.0625rem**; see Pending: the brand-field scale.
 - **Body** (400, 1rem, 1.5, tracking `-0.015em`): the default. Input values sit here.
 - **Label** (400, 0.875rem, 1.43): field labels, supporting paragraphs, notes, quiet actions. Paragraphs at this size take `1.625` line-height when they run to multiple lines and `1.375` when they are a compact note. A 0.75rem step exists for one thing only: the fine print beneath the sign-in card.
+
+### The light-surface scale (post-auth)
+
+Onboarding Mode is the first screen on the `background` page, and it reads on three steps rather than the card scale: the company name as **Display** (1.5rem, rising to 1.875rem at `sm`, `tracking-normal` because it is user data), the band headings that open each part of the page — "Onboarding milestones", "Your progress", "Documents" — at **Title** (1.25rem, full `text`), and the group labels beneath them (a document section, a progress metric) at **Body** (1rem, `text/70`).
+
+The order matters more than the sizes: a small muted label above a larger heading is an eyebrow, and it inverts the hierarchy it is meant to introduce. The band heading is always the largest thing in its band.
 
 Two monospace-substitute treatments exist, both wide-tracked rather than a second family: the 6-digit code input (1.5rem, centred, `0.4em`) and the TOTP setup key (0.875rem, `0.16em`, grouped in fours). The countdown digits use `tabular-nums` so the timer does not jitter.
 

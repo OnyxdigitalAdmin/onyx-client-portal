@@ -54,11 +54,12 @@ The launch/login sequence is now fully static. No video, and no animated bunnies
 - The same mark on the same background is reused across three screens: the launch/loading screen, the "Authenticating..." screen, and the "Welcome aboard" screen. They differ only in the text shown — never in motion.
 
 ## Database schema (already built and RLS-tested in Supabase — do not recreate)
-- clients — one row per client company. Key fields: vertical (RIA/CPA/Medical), onboarding_stage (1-6), compliance_score, insurance_readiness_pct, ghl_contact_id.
+- clients — one row per client company. Key fields: vertical (RIA/CPA/Medical), package (Assess/Management/Leadership — Assess only ever reaches stage 3), onboarding_stage (1-6), questionnaire_due_date (a plain `date`, not a timestamp), questionnaire_submitted_at, questionnaire_approved_at, ghl_contact_id. **compliance_score and insurance_readiness_pct no longer exist** — both percentages are computed live from compliance_open_items, never read from a column.
 - client_users — links a Supabase auth.users row to a client_id. This is what Row-Level Security checks against.
-- documents — one row per document. doc_type is one of: WISP, IR Plan, Assessment, Security Controls Evidence, Monthly Report, Vuln Scan. status is pending_signature or current.
+- documents — one row per document. There is no title column: `doc_type` IS the display name, and Onboarding Mode groups the types into its four library sections. status is pending_signature or current; pending rows carry signed_count / signatures_required. last_updated is a timestamptz.
 - compliance_open_items — open tasks driving the two trackers. category is insurance or compliance; status is open/in_progress/complete.
 - All four tables have Row-Level Security ON, restricting each client user to rows linked to their own client_id. This isolation has been manually tested and confirmed working.
+- stage_events — one row per completed stage: `stage` (integer) and `completed_at` (timestamptz). Drives the completion dates in the milestone tracker. A client can legitimately have zero rows.
 - Two more tables (evidence vault links, activity log) are planned for Phase 3, not yet built.
 
 ## Auth
@@ -70,7 +71,7 @@ The launch/login sequence is now fully static. No video, and no animated bunnies
 Building Phases 1-3 in a single Supabase project — no real client data exists yet, so no isolation risk. A second, clean production Supabase project gets created right before Phase 4 go-live. Do not build a second environment before then unless explicitly asked.
 
 ## Current status
-Phase 0 (backend/environment setup): COMPLETE. Phase 1 (static launch page + login sequence): COMPLETE — the full sequence is built and polished: launch screen with a real loading bar, login form, TOTP verify + first-time enrollment, "Authenticating…", "Welcome aboard," and the idle-session timeout, plus placeholder pages for both modes. The earlier Hyperframes intro animation has been removed from the build entirely (video, poster, player component and the `videos/onyx-brand-intro/` project are all gone) — see "Launch/login sequence — fully static" above for what replaces it. Phase 2 (the real Onboarding Mode and Management Mode screens) is NOT started. Do not build ahead of the current phase without being asked.
+Phase 0 (backend/environment setup): COMPLETE. Phase 1 (static launch page + login sequence): COMPLETE — the full sequence is built and polished: launch screen with a real loading bar, login form, TOTP verify + first-time enrollment, "Authenticating…", "Welcome aboard," and the idle-session timeout, plus placeholder pages for both modes. The earlier Hyperframes intro animation has been removed from the build entirely (video, poster, player component and the `videos/onyx-brand-intro/` project are all gone) — see "Launch/login sequence — fully static" above for what replaces it. Phase 2 is PART DONE: **Onboarding Mode is built** (`src/routes/Onboarding.tsx`) — header, questionnaire card, six-stage milestone tracker, live progress indicator and the four-section document library, reading real data from `clients`, `documents`, `compliance_open_items` and `stage_events`. It is UI-only: no writes, automations or integrations. Management Mode is still the placeholder. Do not build ahead of the current phase without being asked.
 
 ### Phase 1 implementation notes
 - Routing is `react-router-dom`. `src/routes/` holds the screens, `src/components/` the shared UI, `src/hooks/` the idle timeout and handheld detection, `src/lib/` the Supabase/MFA/client-context helpers.
@@ -80,6 +81,15 @@ Phase 0 (backend/environment setup): COMPLETE. Phase 1 (static launch page + log
 - `BrandField` compensates for the mark's padding: the bunnies occupy only the middle 43.8% × 35.2% of the PNG, so the raw image box overshoots what you can see by ~120px. Spacing utilities beneath it would otherwise be badly wrong.
 - `public/_redirects` gives Netlify the SPA rewrite, without which a refresh on `/login` 404s.
 - Password reset is deliberately absent: accounts are staff-provisioned, so a locked-out client contacts Onyx.
+
+### Phase 2 implementation notes — Onboarding Mode
+- `src/lib/onboarding.ts` holds every derivation (stage states, questionnaire state, live percentages, document grouping) and deliberately has **no runtime imports**, so `npm test` exercises it under plain Node with no browser or database. `src/lib/onboarding.test.ts` covers the five seed clients as cases. Tests are typechecked by `tsconfig.node.json`, not the app config.
+- `src/routes/Onboarding.tsx` is the screen: the default export loads data, `OnboardingView` renders it from already-resolved props.
+- **`questionnaire_due_date` is a plain `date`, not a timestamp.** Never put it through `new Date()` — that reads it as UTC midnight and renders the day before in Boston. `formatDateOnly` builds it from its parts, and `isPastDue` compares local calendar days.
+- The document library's Reports section is the **remainder** bucket, not a fixed list of three types: anything whose `doc_type` the Assessment/Governance/Evidence sections don't name surfaces there, so a new or renamed type is never silently dropped.
+- Empty-state precedence: a client with zero documents gets the single calm line, which wins over the Assess "Included with Management" tiles.
+- Percentages are always computed from `compliance_open_items`; there is no stored column to read, and Onboarding Mode never uses regulator-compliance phrasing ("X% SEC compliant") — that is Management Mode's language.
+- `/questionnaire` and `/reports` are intentional dead links; those flows are not built.
 
 ## Hard constraints — do not assume otherwise
 - The document library IS core in-scope functionality, not optional.
