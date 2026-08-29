@@ -2,7 +2,7 @@
  * Everything Onboarding Mode derives from the four tables it reads.
  *
  * Deliberately free of runtime imports so the branching here — package
- * differences, stage states, live percentages, section grouping — can be
+ * differences, stage states, live percentages, acknowledgment lines — can be
  * exercised by `npm test` without a browser or a database.
  */
 
@@ -22,31 +22,27 @@ export type ClientFacts = {
   questionnaireSubmittedAt: string | null
   questionnaireApprovedAt: string | null
 }
-/** The six onboarding stages, in order. Index + 1 is the stage number. */
+/**
+ * The five onboarding stages, in order. Index + 1 is the stage number.
+ *
+ * 'Managed' is deliberately absent: it is not a milestone but what happens
+ * after the programme ends. Completing stage 5 takes the client out of
+ * Onboarding Mode entirely rather than on to a sixth step.
+ */
 export const STAGE_LABELS = [
   'Kickoff',
   'Assessment',
   'Findings Delivered',
   'Remediation',
   'Compliance Ready',
-  'Managed',
 ] as const
 
-/** Assess stops at Findings Delivered; stages 4-6 are what Management adds. */
+/** Assess stops at Findings Delivered; stages 4-5 are what Management adds. */
 export const ASSESS_FINAL_STAGE = 3
 export const INCLUDED_WITH_MANAGEMENT = 'Included with Management'
 
 /** The progress indicator is hidden until findings exist to measure against. */
 export const PROGRESS_FROM_STAGE = 3
-
-export type DocumentRow = {
-  id: string
-  doc_type: string
-  status: string
-  last_updated: string | null
-  signed_count: number | null
-  signatures_required: number | null
-}
 
 export type OpenItemRow = {
   id: string
@@ -166,13 +162,22 @@ export function buildMilestones(
  * Progress — always computed live, never read from a stored percentage.
  * ---------------------------------------------------------------------- */
 
+export type ChecklistItem = { id: string; title: string; complete: boolean }
+
 export type CategoryProgress = {
   percent: number
-  /** Open and in-progress items. Completed work is not listed back at anyone. */
-  outstanding: OpenItemRow[]
+  /** Every item in the category, complete or not. */
+  items: ChecklistItem[]
 }
 
-/** Returns null for a category with no items at all — rendered as nothing, not 0%. */
+/**
+ * Completed items divided by total items, and the whole list behind it.
+ *
+ * The list is complete on purpose. A percentage computed against items the
+ * client cannot see is a number they cannot check — count the ticks, get the
+ * same figure, every time. Returns null for a category with no items at all,
+ * which renders as nothing rather than as 0%.
+ */
 export function categoryProgress(
   openItems: OpenItemRow[],
   category: string,
@@ -180,136 +185,65 @@ export function categoryProgress(
   const inCategory = openItems.filter((item) => item.category === category)
   if (inCategory.length === 0) return null
 
-  const complete = inCategory.filter((item) => item.status === 'complete').length
+  const items = inCategory.map((item) => ({
+    id: item.id,
+    title: item.title,
+    complete: item.status === 'complete',
+  }))
 
   return {
-    percent: Math.round((complete / inCategory.length) * 100),
-    outstanding: inCategory.filter((item) => item.status !== 'complete'),
+    percent: Math.round((items.filter((item) => item.complete).length / items.length) * 100),
+    items,
   }
 }
 
 /* -------------------------------------------------------------------------
- * Document library
+ * Employee acknowledgment
  * ---------------------------------------------------------------------- */
 
-type SectionSpec = { name: string; docTypes: string[]; managementOnly?: boolean }
-
-const SECTION_SPECS: SectionSpec[] = [
+/** The two documents whose checklist line is driven by the acknowledgment flag. */
+const ACKNOWLEDGED_DOCS = [
   {
-    name: 'Assessment',
-    docTypes: ['Compliance Gap Analysis', 'Risk Register & Remediation Roadmap'],
+    name: 'Written Information Security Plan',
+    matches: /\bWISP\b|written information security/i,
   },
   {
-    name: 'Governance',
-    docTypes: [
-      'WISP',
-      'IR Plan',
-      'Annual Written Risk Assessment',
-      'Vendor Oversight Register',
-      'Asset Inventory',
-    ],
-    managementOnly: true,
+    name: 'Incident Response Plan',
+    matches: /\bIRP?\b|\bIR Plan\b|incident response/i,
   },
-  {
-    name: 'Evidence',
-    docTypes: ['Evidence Binder', 'Broker & Underwriter Submission Package'],
-    managementOnly: true,
-  },
-]
+] as const
 
-const FIXED_DOC_TYPES = new Set(SECTION_SPECS.flatMap((section) => section.docTypes))
+/** A signature line, in whichever wording the item was written with. */
+const SIGNATURE_LINE = /sign(ed|ature)|acknowledg/i
 
-export const REPORTS_SHOWN = 3
+export type AcknowledgmentRow = { doc_type: string; all_employees_acknowledged: boolean | null }
 
 /**
- * The evidence binder is named for what the client's regulator calls the
- * exercise, so the document reads the way their examiner will ask for it.
- */
-export function documentLabel(docType: string, vertical: string | null): string {
-  if (docType !== 'Evidence Binder') return docType
-  if (vertical === 'RIA') return 'Examination Evidence Binder'
-  if (vertical === 'CPA') return 'Safeguards Evidence Binder'
-  return docType
-}
-
-export type Tile = {
-  key: string
-  label: string
-} & (
-  | { state: 'available'; completedOn: string | null }
-  | { state: 'pending-signature'; signed: string }
-  | { state: 'management' }
-)
-
-export type DocumentSection = {
-  name: string
-  tiles: Tile[]
-  /** Reports overflow past the three most recent, so it carries the link. */
-  viewAll?: boolean
-}
-
-function toTile(doc: DocumentRow, vertical: string | null): Tile {
-  const label = documentLabel(doc.doc_type, vertical)
-
-  if (doc.status === 'pending_signature') {
-    return {
-      key: doc.id,
-      label,
-      state: 'pending-signature',
-      signed: `${doc.signed_count ?? 0} of ${doc.signatures_required ?? 0} signed`,
-    }
-  }
-
-  return { key: doc.id, label, state: 'available', completedOn: formatTimestamp(doc.last_updated) }
-}
-
-const byMostRecent = (a: DocumentRow, b: DocumentRow) =>
-  (b.last_updated ? Date.parse(b.last_updated) : 0) -
-  (a.last_updated ? Date.parse(a.last_updated) : 0)
-
-/**
- * Groups documents into the four library sections.
+ * Rewrites the two signature checklist lines to read from the document flag.
  *
- * An Assess client has no Governance or Evidence documents to hold, so those
- * sections show what the Management package adds instead of vanishing — the
- * point is to show a path forward, never to lock a door.
+ * Both surfaces — this checklist and the library's detail row — resolve to one
+ * boolean per document, so they can never disagree. The wording drops any
+ * count and any in-progress middle state: the flag says acknowledged or it
+ * does not. An item whose document is missing keeps its own status rather than
+ * silently reading as unacknowledged.
  */
-export function buildDocumentSections(
-  documents: DocumentRow[],
-  client: Pick<ClientFacts, 'package' | 'vertical'>,
-): DocumentSection[] {
-  const isAssess = client.package === 'Assess'
-  const sections: DocumentSection[] = []
+export function applyAcknowledgments(
+  openItems: OpenItemRow[],
+  documents: AcknowledgmentRow[],
+): OpenItemRow[] {
+  return openItems.map((item) => {
+    if (!SIGNATURE_LINE.test(item.title)) return item
 
-  for (const spec of SECTION_SPECS) {
-    const tiles: Tile[] =
-      isAssess && spec.managementOnly
-        ? spec.docTypes.map((docType) => ({
-            key: docType,
-            label: documentLabel(docType, client.vertical),
-            state: 'management',
-          }))
-        : spec.docTypes.flatMap((docType) =>
-            documents
-              .filter((doc) => doc.doc_type === docType)
-              .map((doc) => toTile(doc, client.vertical)),
-          )
+    const doc = ACKNOWLEDGED_DOCS.find((candidate) => candidate.matches.test(item.title))
+    if (!doc) return item
 
-    if (tiles.length > 0) sections.push({ name: spec.name, tiles })
-  }
+    const row = documents.find((candidate) => doc.matches.test(candidate.doc_type))
+    if (!row) return item
 
-  // Reports is the remainder rather than a fixed list: the recurring documents
-  // repeat, and anything whose type the three fixed sections don't name still
-  // surfaces here instead of being silently dropped.
-  const reports = documents.filter((doc) => !FIXED_DOC_TYPES.has(doc.doc_type)).sort(byMostRecent)
-
-  if (reports.length > 0) {
-    sections.push({
-      name: 'Reports',
-      tiles: reports.slice(0, REPORTS_SHOWN).map((doc) => toTile(doc, client.vertical)),
-      viewAll: true,
-    })
-  }
-
-  return sections
+    return {
+      ...item,
+      title: `${doc.name} acknowledged by all employees`,
+      status: row.all_employees_acknowledged ? 'complete' : 'open',
+    }
+  })
 }

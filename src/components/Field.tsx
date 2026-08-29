@@ -3,6 +3,8 @@ import type { InputHTMLAttributes } from 'react'
 
 type FieldProps = InputHTMLAttributes<HTMLInputElement> & {
   label: string
+  /** Overrides the card-scale label. The sign-in field sets it larger. */
+  labelClassName?: string
 }
 
 /**
@@ -14,13 +16,13 @@ type FieldProps = InputHTMLAttributes<HTMLInputElement> & {
  * placeholder text clears 4.5:1 and the /45 rule clears the 3:1 required of a
  * control boundary. Lowering either fails WCAG on this background.
  */
-export function Field({ label, className, ...inputProps }: FieldProps) {
+export function Field({ label, labelClassName, className, ...inputProps }: FieldProps) {
   const generatedId = useId()
   const id = inputProps.id ?? generatedId
 
   return (
     <div className="flex flex-col gap-2">
-      <label htmlFor={id} className="text-sm text-white/85">
+      <label htmlFor={id} className={labelClassName ?? 'text-sm text-white/85'}>
         {label}
       </label>
       <input

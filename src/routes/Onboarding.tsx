@@ -1,18 +1,19 @@
 import { useEffect, useState, type ReactNode } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { DocumentLibrary, LIBRARY_ANCHOR_ID } from '../components/DocumentLibrary'
+import { PortalHeader } from '../components/PortalHeader'
 import { usePortal } from '../hooks/usePortal'
+import type { LibraryDocumentRow } from '../lib/documents'
 import type {
   CategoryProgress,
   ClientFacts,
-  DocumentRow,
   Milestone,
   OpenItemRow,
   QuestionnaireState,
   StageEventRow,
-  Tile,
 } from '../lib/onboarding'
 import {
-  buildDocumentSections,
+  applyAcknowledgments,
   buildMilestones,
   categoryProgress,
   formatDateOnly,
@@ -24,7 +25,7 @@ import {
 import { supabase } from '../lib/supabaseClient'
 
 type OnboardingData = {
-  documents: DocumentRow[]
+  documents: LibraryDocumentRow[]
   openItems: OpenItemRow[]
   stageEvents: StageEventRow[]
 }
@@ -38,7 +39,7 @@ async function fetchOnboardingData(clientId: string): Promise<OnboardingData> {
   const [documents, openItems, stageEvents] = await Promise.all([
     supabase
       .from('documents')
-      .select('id, doc_type, status, last_updated, signed_count, signatures_required')
+      .select('id, doc_type, last_updated, all_employees_acknowledged, storage_path')
       .eq('client_id', clientId),
     supabase
       .from('compliance_open_items')
@@ -58,29 +59,24 @@ async function fetchOnboardingData(clientId: string): Promise<OnboardingData> {
 }
 
 const focusRing =
-  'focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ' +
-  'focus-visible:ring-offset-background focus-visible:outline-none'
+  'focus-visible:ring-2 focus-visible:ring-white/60 focus-visible:ring-offset-2 ' +
+  'focus-visible:ring-offset-primary-dark focus-visible:outline-none'
 
-/** Primary pill on a light surface: hover deepens rather than thinning. */
 const primaryPill =
   'inline-flex items-center justify-center rounded-full bg-primary px-6 py-3 ' +
-  `text-white transition-colors hover:bg-primary-dark ${focusRing}`
-
-const quietLink =
-  'inline-block rounded-full py-2 text-sm text-text/70 underline underline-offset-4 ' +
-  `transition-colors hover:text-text focus-visible:text-text ${focusRing}`
+  `text-white transition-colors hover:bg-primary/85 ${focusRing}`
 
 /**
- * The Attention token reaches only 2.85:1 against `background`, so on this
- * surface it carries as a wash behind full-contrast text rather than as
- * coloured type — the light-surface counterpart of the Light Plate Rule.
+ * Attention reaches only 4.0:1 against primary-dark, under the 4.5:1 floor for
+ * text, so on this field it carries as a wash behind full-contrast white — the
+ * Amber Wash Rule transposed to the dark surface. The flag stays amber and the
+ * words stay readable.
  */
-const attentionChip =
-  'inline-block rounded-full bg-attention/15 px-3 py-1 text-sm text-text'
+const attentionChip = 'inline-block rounded-full bg-attention/30 px-3 py-1 text-sm text-white'
 
 /** The heading that opens each band of the page. */
 function SectionHeading({ children }: { children: string }) {
-  return <h2 className="text-xl text-text">{children}</h2>
+  return <h2 className="text-xl text-white">{children}</h2>
 }
 
 /* ---------------------------------------------------------------- 2. Questionnaire */
@@ -92,13 +88,13 @@ function QuestionnaireCard({
   state: Exclude<QuestionnaireState, null>
   dueDate: string | null
 }) {
-  const card = 'rounded-3xl border border-border p-6 sm:p-8'
+  const card = 'rounded-3xl border border-white/20 bg-white/[0.04] p-6 sm:p-8'
 
   if (state === 'submitted') {
     return (
       <section className={card}>
-        <h2 className="text-xl text-text">Received — we’re reviewing it.</h2>
-        <p className="mt-2 max-w-[60ch] text-sm leading-relaxed text-text/70">
+        <h2 className="text-xl text-white">Received — we’re reviewing it.</h2>
+        <p className="mt-2 max-w-[60ch] text-sm leading-relaxed text-white/80">
           Thanks for sending it through. We’ll follow up once we’ve been through your answers —
           there’s nothing further you need to do right now.
         </p>
@@ -110,8 +106,8 @@ function QuestionnaireCard({
 
   return (
     <section className={card}>
-      <h2 className="text-xl text-text">Let’s get started</h2>
-      <p className="mt-2 max-w-[60ch] text-sm leading-relaxed text-text/70">
+      <h2 className="text-xl text-white">Let’s get started</h2>
+      <p className="mt-2 max-w-[60ch] text-sm leading-relaxed text-white/80">
         Your onboarding questionnaire tells us how your firm actually works, so everything that
         follows is built around it rather than around a template.
       </p>
@@ -123,7 +119,7 @@ function QuestionnaireCard({
           {overdue ? (
             <span className={attentionChip}>Was due {dueDate}</span>
           ) : (
-            <span className="text-sm text-text/70">Due {dueDate}</span>
+            <span className="text-sm text-white/80">Due {dueDate}</span>
           )}
         </p>
       ) : null}
@@ -137,13 +133,27 @@ function QuestionnaireCard({
 
 /* ------------------------------------------------------------- 3. Milestone tracker */
 
-const MARKER_STYLES: Record<Milestone['state'], string> = {
-  complete: 'bg-complete',
-  current: 'bg-primary ring-4 ring-primary/15',
-  upcoming: 'border border-border bg-background',
-  management: 'border border-border bg-background',
+function CheckMark() {
+  return (
+    <svg viewBox="0 0 20 20" aria-hidden="true" className="size-5 text-white">
+      <path
+        d="m4 10.5 4 4 8-9"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  )
 }
 
+/**
+ * Three states, and no colour carries meaning in any of them: a completed
+ * stage is a white check, the current stage is an open ring labelled "In
+ * progress", and a stage still ahead has no marker at all. Green dots are
+ * gone — a tick is legible without needing a legend.
+ */
 function MilestoneTracker({ milestones }: { milestones: Milestone[] }) {
   return (
     <section>
@@ -152,37 +162,47 @@ function MilestoneTracker({ milestones }: { milestones: Milestone[] }) {
       <ol className="mt-5">
         {milestones.map((milestone, index) => {
           const isLast = index === milestones.length - 1
+          const complete = milestone.state === 'complete'
+          const current = milestone.state === 'current'
 
           return (
             <li
               key={milestone.stage}
               className="flex gap-4"
-              aria-current={milestone.state === 'current' ? 'step' : undefined}
+              aria-current={current ? 'step' : undefined}
             >
-              <div className="flex flex-col items-center" aria-hidden="true">
-                <span className={`mt-1.5 h-3 w-3 shrink-0 rounded-full ${MARKER_STYLES[milestone.state]}`} />
-                {isLast ? null : <span className="w-px flex-1 bg-border" />}
+              <div className="flex w-5 flex-col items-center" aria-hidden="true">
+                {complete ? (
+                  <CheckMark />
+                ) : current ? (
+                  <span className="mt-0.5 size-4 shrink-0 rounded-full border-2 border-white" />
+                ) : (
+                  <span className="mt-0.5 size-4 shrink-0" />
+                )}
+                {isLast ? null : <span className="mt-1 w-px flex-1 bg-white/25" />}
               </div>
 
               <div className={isLast ? '' : 'pb-7'}>
-                {milestone.state === 'current' ? (
+                {current ? (
                   <>
-                    <p className="text-lg text-text">{milestone.label}</p>
-                    <p className="mt-1 text-sm text-primary">Current stage</p>
+                    <p className="text-lg text-white">{milestone.label}</p>
+                    <p className="mt-1 text-sm text-white/80">In progress</p>
                   </>
-                ) : milestone.state === 'complete' ? (
+                ) : complete ? (
                   <>
-                    <p className="text-text/70">{milestone.label}</p>
+                    <p className="text-white">{milestone.label}</p>
                     {/* Completion dates only — never elapsed days or a countdown. */}
                     {milestone.completedOn ? (
-                      <p className="mt-1 text-sm text-text/65">Completed {milestone.completedOn}</p>
+                      <p className="mt-1 text-sm text-white/70">
+                        Completed {milestone.completedOn}
+                      </p>
                     ) : null}
                   </>
                 ) : (
                   <>
-                    <p className="text-text/65">{milestone.label}</p>
+                    <p className="text-white/65">{milestone.label}</p>
                     {milestone.state === 'management' ? (
-                      <p className="mt-1 text-sm text-text/65">{INCLUDED_WITH_MANAGEMENT}</p>
+                      <p className="mt-1 text-sm text-white/65">{INCLUDED_WITH_MANAGEMENT}</p>
                     ) : null}
                   </>
                 )}
@@ -201,8 +221,8 @@ function ProgressBlock({ title, progress }: { title: string; progress: CategoryP
   return (
     <div>
       <div className="flex items-baseline justify-between gap-4">
-        <h3 className="text-base text-text">{title}</h3>
-        <span className="text-base tabular-nums text-text/70">{progress.percent}%</span>
+        <h3 className="text-base text-white">{title}</h3>
+        <span className="text-base tabular-nums text-white">{progress.percent}%</span>
       </div>
 
       <div
@@ -211,34 +231,26 @@ function ProgressBlock({ title, progress }: { title: string; progress: CategoryP
         aria-valuenow={progress.percent}
         aria-valuemin={0}
         aria-valuemax={100}
-        className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-border"
+        className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-white/20"
       >
-        <div
-          className={`h-full rounded-full ${progress.percent === 100 ? 'bg-complete' : 'bg-primary'}`}
-          style={{ width: `${progress.percent}%` }}
-        />
+        <div className="h-full rounded-full bg-white" style={{ width: `${progress.percent}%` }} />
       </div>
 
-      {progress.outstanding.length > 0 ? (
-        <ul className="mt-4 space-y-2.5">
-          {progress.outstanding.map((item) => (
-            <li key={item.id} className="flex items-start gap-3 text-sm">
-              <span
-                aria-hidden="true"
-                className={`mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full ${
-                  item.status === 'in_progress' ? 'bg-attention' : 'bg-text/35'
-                }`}
-              />
-              <span className="text-text/70">
-                {item.title}
-                {item.status === 'in_progress' ? (
-                  <span className="text-text/65"> · In progress</span>
-                ) : null}
-              </span>
-            </li>
-          ))}
-        </ul>
-      ) : null}
+      {/* Every item, complete or not — the percentage above is exactly the
+          ticks below over the total, and a client can check it by counting. */}
+      <ul className="mt-4 space-y-2.5">
+        {progress.items.map((item) => (
+          <li key={item.id} className="flex items-start gap-3 text-sm">
+            <span aria-hidden="true" className="mt-px w-5 shrink-0">
+              {item.complete ? <CheckMark /> : null}
+            </span>
+            <span className={item.complete ? 'text-white' : 'text-white/80'}>
+              {item.title}
+              <span className="sr-only">{item.complete ? ' — complete' : ' — not yet complete'}</span>
+            </span>
+          </li>
+        ))}
+      </ul>
     </div>
   )
 }
@@ -266,64 +278,6 @@ function ProgressIndicator({
   )
 }
 
-/* --------------------------------------------------------------- 5. Document library */
-
-function DocumentTile({ tile }: { tile: Tile }) {
-  const notInPackage = tile.state === 'management'
-
-  return (
-    <li className="rounded-2xl border border-border px-5 py-4">
-      <p className={notInPackage ? 'text-text/65' : 'text-text'}>{tile.label}</p>
-
-      {tile.state === 'pending-signature' ? (
-        <p className="mt-2">
-          <span className={attentionChip}>{tile.signed}</span>
-        </p>
-      ) : (
-        <p className="mt-1 text-sm text-text/65">
-          {tile.state === 'management' ? INCLUDED_WITH_MANAGEMENT : (tile.completedOn ?? 'Available')}
-        </p>
-      )}
-    </li>
-  )
-}
-
-function DocumentLibrary({ documents, client }: { documents: DocumentRow[]; client: LibraryClient }) {
-  const sections = buildDocumentSections(documents, client)
-
-  return (
-    <section>
-      <SectionHeading>Documents</SectionHeading>
-
-      {documents.length === 0 ? (
-        <p className="mt-5 text-text/70">Your documents will appear here as they’re completed.</p>
-      ) : (
-        <div className="mt-5 space-y-8">
-          {sections.map((section) => (
-            <div key={section.name}>
-              <h3 className="text-base text-text/70">{section.name}</h3>
-
-              <ul className="mt-3 grid gap-3 sm:grid-cols-2">
-                {section.tiles.map((tile) => (
-                  <DocumentTile key={tile.key} tile={tile} />
-                ))}
-              </ul>
-
-              {section.viewAll ? (
-                <Link to="/reports" className={`mt-4 inline-block ${quietLink}`}>
-                  View all reports
-                </Link>
-              ) : null}
-            </div>
-          ))}
-        </div>
-      )}
-    </section>
-  )
-}
-
-type LibraryClient = Parameters<typeof buildDocumentSections>[1]
-
 /* ------------------------------------------------------------------------ the page */
 
 /**
@@ -334,53 +288,70 @@ type LibraryClient = Parameters<typeof buildDocumentSections>[1]
  */
 export function OnboardingView({
   client,
+  clientId,
+  role,
+  vciso,
   data,
   onSignOut,
 }: {
   client: ClientFacts
+  clientId: string
+  role: string | null
+  vciso: { name: string | null; contact: string | null }
   data: OnboardingData
   onSignOut: () => void
 }) {
   const stageLabel = STAGE_LABELS[client.onboardingStage - 1]
   const questionnaire = questionnaireState(client)
+  // One boolean per document drives both the checklist line and the library
+  // row, so the two can never disagree about the same fact.
+  const openItems = applyAcknowledgments(data.openItems, data.documents)
 
   return (
     <>
-      <div className="flex justify-end">
-        <button type="button" onClick={onSignOut} className={quietLink}>
-          Sign out
-        </button>
-      </div>
+      <PortalHeader
+        companyName={client.companyName}
+        vciso={vciso}
+        onSignOut={onSignOut}
+        onOpenDocuments={() =>
+          document.getElementById(LIBRARY_ANCHOR_ID)?.scrollIntoView({ behavior: 'smooth' })
+        }
+      />
 
-      {/* 1. Header. tracking-normal because a firm's own name is user data. */}
-      <header className="mt-6">
-        <h1 className="text-2xl leading-tight tracking-normal break-words text-text sm:text-3xl">
-          {client.companyName}
-        </h1>
-        <p className="mt-3 text-text/70">
+      <div className="mx-auto w-full max-w-2xl pt-8 pb-16">
+        <p className="px-6 text-white/80">
           Stage {client.onboardingStage} of {STAGE_LABELS.length}
           {stageLabel ? ` — ${stageLabel}` : ''}
         </p>
-      </header>
 
-      <div className="mt-10 space-y-12">
-        {questionnaire ? (
-          <QuestionnaireCard
-            state={questionnaire}
-            dueDate={formatDateOnly(client.questionnaireDueDate)}
+        <div className="mt-8 space-y-12 px-6">
+          {questionnaire ? (
+            <QuestionnaireCard
+              state={questionnaire}
+              dueDate={formatDateOnly(client.questionnaireDueDate)}
+            />
+          ) : null}
+
+          <MilestoneTracker milestones={buildMilestones(client, data.stageEvents)} />
+
+          {client.onboardingStage >= PROGRESS_FROM_STAGE ? (
+            <ProgressIndicator
+              insurance={categoryProgress(openItems, 'insurance')}
+              compliance={categoryProgress(openItems, 'compliance')}
+            />
+          ) : null}
+        </div>
+
+        {/* Full column width rather than inset: the library's rules are the
+            file-cabinet, and an indented cabinet stops reading as one. */}
+        <div className="mt-14">
+          <DocumentLibrary
+            documents={data.documents}
+            companyName={client.companyName}
+            clientId={clientId}
+            role={role}
           />
-        ) : null}
-
-        <MilestoneTracker milestones={buildMilestones(client, data.stageEvents)} />
-
-        {client.onboardingStage >= PROGRESS_FROM_STAGE ? (
-          <ProgressIndicator
-            insurance={categoryProgress(data.openItems, 'insurance')}
-            compliance={categoryProgress(data.openItems, 'compliance')}
-          />
-        ) : null}
-
-        <DocumentLibrary documents={data.documents} client={client} />
+        </div>
       </div>
     </>
   )
@@ -388,11 +359,7 @@ export function OnboardingView({
 
 /** The page frame, so the surface is held identically while data resolves. */
 export function OnboardingFrame({ children }: { children: ReactNode }) {
-  return (
-    <main className="min-h-dvh bg-background">
-      <div className="mx-auto w-full max-w-2xl px-6 py-10 sm:px-8 sm:py-14">{children}</div>
-    </main>
-  )
+  return <main className="min-h-dvh bg-primary-dark">{children}</main>
 }
 
 export default function Onboarding() {
@@ -421,7 +388,7 @@ export default function Onboarding() {
   if (loadFailed) {
     return (
       <OnboardingFrame>
-        <p className="text-text/70">
+        <p className="mx-auto max-w-2xl px-6 py-16 text-white/80">
           We couldn’t load your status just now. Please refresh the page, and contact us if it keeps
           happening.
         </p>
@@ -434,7 +401,14 @@ export default function Onboarding() {
 
   return (
     <OnboardingFrame>
-      <OnboardingView client={client} data={data} onSignOut={signOut} />
+      <OnboardingView
+        client={client}
+        clientId={client.clientId}
+        role={client.role}
+        vciso={{ name: client.vcisoName, contact: client.vcisoContact }}
+        data={data}
+        onSignOut={signOut}
+      />
     </OnboardingFrame>
   )
 }

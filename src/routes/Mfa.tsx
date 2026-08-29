@@ -4,14 +4,12 @@ import { useNavigate } from 'react-router-dom'
 import { AuthenticatingScreen } from '../components/AuthenticatingScreen'
 import { BrandField } from '../components/BrandField'
 import { Button } from '../components/Button'
+import { CODE_LENGTH, CodeInput } from '../components/CodeInput'
 import { ErrorNote } from '../components/ErrorNote'
-import { Field } from '../components/Field'
 import { useIsHandheld } from '../hooks/useIsHandheld'
 import type { MfaSetup } from '../lib/mfa'
 import { formatSecret, hasSatisfiedMfa, prepareMfa, verifyMfaCode } from '../lib/mfa'
 import { supabase } from '../lib/supabaseClient'
-
-const CODE_LENGTH = 6
 
 type Phase = 'preparing' | 'ready' | 'verifying'
 
@@ -162,7 +160,7 @@ export default function Mfa() {
           ) : null}
 
           <form onSubmit={handleSubmit} className="mt-7 flex flex-col gap-5">
-            <CodeInput value={code} onChange={setCode} />
+            <CodeInput label="6-digit code" value={code} onChange={setCode} />
             <Button type="submit" disabled={code.length !== CODE_LENGTH} className="w-full">
               {enrolling ? 'Confirm and continue' : 'Verify'}
             </Button>
@@ -170,24 +168,6 @@ export default function Mfa() {
         </div>
       </div>
     </BrandField>
-  )
-}
-
-function CodeInput({ value, onChange }: { value: string; onChange: (next: string) => void }) {
-  return (
-    <Field
-      label="6-digit code"
-      value={value}
-      onChange={(event) => onChange(event.target.value.replace(/\D/g, '').slice(0, CODE_LENGTH))}
-      inputMode="numeric"
-      autoComplete="one-time-code"
-      pattern="\d{6}"
-      maxLength={CODE_LENGTH}
-      autoFocus
-      required
-      placeholder="000000"
-      className="text-center text-2xl tracking-[0.4em] placeholder:tracking-[0.4em]"
-    />
   )
 }
 

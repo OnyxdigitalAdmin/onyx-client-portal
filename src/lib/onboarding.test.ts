@@ -7,29 +7,19 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import {
-  buildDocumentSections,
+  applyAcknowledgments,
   buildMilestones,
   categoryProgress,
-  documentLabel,
   formatDateOnly,
   formatTimestamp,
   INCLUDED_WITH_MANAGEMENT,
   isPastDue,
   questionnaireState,
-  type DocumentRow,
+  STAGE_LABELS,
   type OpenItemRow,
 } from './onboarding.ts'
 
 const TODAY = new Date(2026, 7, 24) // 24 Aug 2026, local
-
-const doc = (over: Partial<DocumentRow> & { doc_type: string }): DocumentRow => ({
-  id: over.doc_type,
-  status: 'current',
-  last_updated: '2026-08-01T14:30:00+00:00',
-  signed_count: null,
-  signatures_required: null,
-  ...over,
-})
 
 const item = (over: Partial<OpenItemRow> & { category: string; status: string }): OpenItemRow => ({
   id: `${over.category}-${over.status}-${over.title ?? ''}`,
@@ -88,13 +78,19 @@ test('questionnaire states cover not-started, overdue and submitted', () => {
 
 /* ------------------------------------------------------------------ milestones */
 
-test('Meridian renders all six stages cleanly with zero stage_events', () => {
+test('there are five stages, and Managed is not one of them', () => {
+  assert.equal(STAGE_LABELS.length, 5)
+  assert.equal(STAGE_LABELS.at(-1), 'Compliance Ready')
+  assert.ok(!STAGE_LABELS.includes('Managed' as never))
+})
+
+test('Meridian renders all five stages cleanly with zero stage_events', () => {
   const milestones = buildMilestones({ onboardingStage: 1, package: 'Management' }, [])
 
-  assert.equal(milestones.length, 6)
+  assert.equal(milestones.length, 5)
   assert.deepEqual(
     milestones.map((m) => m.state),
-    ['current', 'upcoming', 'upcoming', 'upcoming', 'upcoming', 'upcoming'],
+    ['current', 'upcoming', 'upcoming', 'upcoming', 'upcoming'],
   )
   assert.ok(milestones.every((m) => m.completedOn === null))
 })
@@ -113,26 +109,28 @@ test('completed stages carry their date, and only when a row exists', () => {
   assert.equal(milestones[3].completedOn, null)
 })
 
-test('Assess stages 4-6 are a path, not upcoming stages', () => {
+test('Assess stages 4-5 are a path, not upcoming stages', () => {
   const milestones = buildMilestones({ onboardingStage: 3, package: 'Assess' }, [])
 
   assert.deepEqual(
     milestones.map((m) => m.state),
-    ['complete', 'complete', 'current', 'management', 'management', 'management'],
+    ['complete', 'complete', 'current', 'management', 'management'],
   )
+  assert.equal(INCLUDED_WITH_MANAGEMENT, 'Included with Management')
 })
 
-test('Copley Tax at stage 6 shows five complete stages and Managed as current', () => {
+test('Copley Tax past stage 5 has every stage complete and no current one', () => {
+  // onboarding_stage 6 means the programme is finished; the portal leaves
+  // Onboarding Mode rather than showing a sixth milestone.
   const milestones = buildMilestones({ onboardingStage: 6, package: 'Leadership' }, [])
 
   assert.equal(milestones.filter((m) => m.state === 'complete').length, 5)
-  assert.equal(milestones[5].state, 'current')
-  assert.equal(milestones[5].label, 'Managed')
+  assert.equal(milestones.filter((m) => m.state === 'current').length, 0)
 })
 
 /* -------------------------------------------------------------------- progress */
 
-test('progress is computed live from the items, not read from a column', () => {
+test('the percentage is complete over total, and every item is listed', () => {
   const items = [
     item({ category: 'insurance', status: 'complete' }),
     item({ category: 'insurance', status: 'in_progress', title: 'MFA rollout' }),
@@ -142,18 +140,37 @@ test('progress is computed live from the items, not read from a column', () => {
 
   const insurance = categoryProgress(items, 'insurance')
   assert.equal(insurance?.percent, 25)
-  assert.deepEqual(insurance?.outstanding.map((o) => o.title), [
-    'MFA rollout',
-    'Backup testing',
-    'Vendor review',
-  ])
+  // Countable: four lines, one ticked, 25%.
+  assert.equal(insurance?.items.length, 4)
+  assert.equal(insurance?.items.filter((i) => i.complete).length, 1)
+})
+
+test('zero of five is 0%, not some other number', () => {
+  const items = Array.from({ length: 5 }, (_, index) =>
+    item({ category: 'compliance', status: 'open', title: `Item ${index}` }),
+  )
+  const progress = categoryProgress(items, 'compliance')
+
+  assert.equal(progress?.percent, 0)
+  assert.equal(progress?.items.length, 5)
+})
+
+test('an in-progress item counts as not complete', () => {
+  const progress = categoryProgress(
+    [
+      item({ category: 'compliance', status: 'complete' }),
+      item({ category: 'compliance', status: 'in_progress', title: 'b' }),
+    ],
+    'compliance',
+  )
+  assert.equal(progress?.percent, 50)
 })
 
 test('a category with no items renders nothing rather than 0%', () => {
   assert.equal(categoryProgress([item({ category: 'insurance', status: 'open' })], 'compliance'), null)
 })
 
-test('Copley Tax at 100% lists nothing outstanding', () => {
+test('Copley Tax at 100% still lists every completed item', () => {
   const items = [
     item({ category: 'compliance', status: 'complete' }),
     item({ category: 'compliance', status: 'complete', title: 'b' }),
@@ -161,86 +178,58 @@ test('Copley Tax at 100% lists nothing outstanding', () => {
   const progress = categoryProgress(items, 'compliance')
 
   assert.equal(progress?.percent, 100)
-  assert.equal(progress?.outstanding.length, 0)
+  assert.ok(progress?.items.every((i) => i.complete))
 })
 
-/* ------------------------------------------------------------------- documents */
+/* ------------------------------------------------------------ acknowledgments */
 
-test('the evidence binder is named for the client vertical', () => {
-  assert.equal(documentLabel('Evidence Binder', 'RIA'), 'Examination Evidence Binder')
-  assert.equal(documentLabel('Evidence Binder', 'CPA'), 'Safeguards Evidence Binder')
-  assert.equal(documentLabel('Evidence Binder', 'Medical'), 'Evidence Binder')
-  assert.equal(documentLabel('WISP', 'RIA'), 'WISP')
-})
-
-test('an empty section is not rendered at all', () => {
-  const sections = buildDocumentSections([doc({ doc_type: 'WISP' })], {
-    package: 'Management',
-    vertical: 'RIA',
-  })
-
-  assert.deepEqual(sections.map((s) => s.name), ['Governance'])
-})
-
-test('Kessler (Assess) sees Governance and Evidence as Included with Management', () => {
-  const sections = buildDocumentSections(
-    [doc({ doc_type: 'Compliance Gap Analysis' }), doc({ doc_type: 'Risk Register & Remediation Roadmap' })],
-    { package: 'Assess', vertical: 'CPA' },
-  )
-
-  assert.deepEqual(sections.map((s) => s.name), ['Assessment', 'Governance', 'Evidence'])
-  assert.ok(sections[0].tiles.every((t) => t.state === 'available'))
-  assert.ok(sections[1].tiles.every((t) => t.state === 'management'))
-  // Vertical naming still applies to a document the package doesn't include.
-  assert.equal(sections[2].tiles[0].label, 'Safeguards Evidence Binder')
-  assert.equal(INCLUDED_WITH_MANAGEMENT, 'Included with Management')
-})
-
-test('pending signatures read as a count, available documents as a date', () => {
-  const sections = buildDocumentSections(
+test('signature lines are rewritten to read from the document flag', () => {
+  const rewritten = applyAcknowledgments(
     [
-      doc({ doc_type: 'WISP', status: 'pending_signature', signed_count: 6, signatures_required: 14 }),
-      doc({ doc_type: 'IR Plan' }),
+      item({ category: 'insurance', status: 'open', title: 'IR Plan signed by all employees' }),
+      item({ category: 'insurance', status: 'in_progress', title: 'WISP signed by all employees' }),
     ],
-    { package: 'Management', vertical: 'RIA' },
-  )
-
-  const [wisp, irPlan] = sections[0].tiles
-  assert.equal(wisp.state === 'pending-signature' && wisp.signed, '6 of 14 signed')
-  assert.equal(irPlan.state === 'available' && irPlan.completedOn, 'Aug 1, 2026')
-})
-
-test('Reports shows the three most recent and carries the view-all link', () => {
-  const sections = buildDocumentSections(
     [
-      doc({ id: 'r1', doc_type: 'Monthly Compliance & Security Report', last_updated: '2026-05-01T00:00:00+00:00' }),
-      doc({ id: 'r2', doc_type: 'Vulnerability Scan Report', last_updated: '2026-08-01T00:00:00+00:00' }),
-      doc({ id: 'r3', doc_type: 'Quarterly Business Review', last_updated: '2026-07-01T00:00:00+00:00' }),
-      doc({ id: 'r4', doc_type: 'Monthly Compliance & Security Report', last_updated: '2026-06-01T00:00:00+00:00' }),
+      { doc_type: 'IR Plan', all_employees_acknowledged: true },
+      { doc_type: 'WISP', all_employees_acknowledged: false },
     ],
-    { package: 'Leadership', vertical: 'CPA' },
   )
 
-  const reports = sections.find((s) => s.name === 'Reports')
-  assert.equal(reports?.viewAll, true)
-  assert.deepEqual(reports?.tiles.map((t) => t.key), ['r2', 'r3', 'r4'])
+  assert.deepEqual(
+    rewritten.map((i) => i.title),
+    [
+      'Incident Response Plan acknowledged by all employees',
+      'Written Information Security Plan acknowledged by all employees',
+    ],
+  )
+  // The flag wins over the item's own status, including its in-progress state.
+  assert.deepEqual(rewritten.map((i) => i.status), ['complete', 'open'])
 })
 
-test('an unrecognised doc_type surfaces in Reports rather than vanishing', () => {
-  const sections = buildDocumentSections([doc({ id: 'x', doc_type: 'Some New Report Type' })], {
-    package: 'Management',
-    vertical: 'RIA',
-  })
+test('the canonical document names match too, not just the short forms', () => {
+  const [rewritten] = applyAcknowledgments(
+    [
+      item({
+        category: 'insurance',
+        status: 'open',
+        title: 'Written Information Security Plan signed by all employees',
+      }),
+    ],
+    [{ doc_type: 'Written Information Security Plan', all_employees_acknowledged: true }],
+  )
 
-  assert.deepEqual(sections.map((s) => s.name), ['Reports'])
+  assert.equal(rewritten.title, 'Written Information Security Plan acknowledged by all employees')
+  assert.equal(rewritten.status, 'complete')
 })
 
-test('Bay State: an Assess client with no documents has nothing real to show', () => {
-  // Only the two "Included with Management" sections can be derived, and no
-  // section carries a real document — which is exactly the case the page
-  // short-circuits to the calm empty line, ahead of rendering any section.
-  const sections = buildDocumentSections([], { package: 'Assess', vertical: 'RIA' })
+test('an item with no matching document keeps its own wording and status', () => {
+  const before = item({ category: 'insurance', status: 'in_progress', title: 'WISP signed by all employees' })
+  assert.deepEqual(applyAcknowledgments([before], []), [before])
+})
 
-  assert.deepEqual(sections.map((s) => s.name), ['Governance', 'Evidence'])
-  assert.ok(sections.every((s) => s.tiles.every((t) => t.state === 'management')))
+test('ordinary items are left alone', () => {
+  const before = item({ category: 'insurance', status: 'open', title: 'MFA rollout' })
+  assert.deepEqual(applyAcknowledgments([before], [{ doc_type: 'WISP', all_employees_acknowledged: true }]), [
+    before,
+  ])
 })

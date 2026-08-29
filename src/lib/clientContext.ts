@@ -1,8 +1,18 @@
 import type { ClientFacts } from './onboarding'
 import { supabase } from './supabaseClient'
 
-/** The signed-in user's company, resolved through the client_users link. */
-export type ClientContext = ClientFacts & { clientId: string }
+/**
+ * The signed-in user's company, resolved through the client_users link, plus
+ * the role that row carries. `role` gates the Share control in the document
+ * library; the database enforces the same rule in RLS, because hiding a button
+ * is not a security control.
+ */
+export type ClientContext = ClientFacts & {
+  clientId: string
+  role: string | null
+  vcisoName: string | null
+  vcisoContact: string | null
+}
 
 /** onboarding_stage runs 1-6; 6 means onboarding is complete. */
 export const ONBOARDING_COMPLETE_STAGE = 6
@@ -15,11 +25,14 @@ type ClientRow = {
   questionnaire_due_date: string | null
   questionnaire_submitted_at: string | null
   questionnaire_approved_at: string | null
+  vciso_name: string | null
+  vciso_contact: string | null
 }
 
 const CLIENT_COLUMNS =
   'company_name, onboarding_stage, vertical, package, ' +
-  'questionnaire_due_date, questionnaire_submitted_at, questionnaire_approved_at' 
+  'questionnaire_due_date, questionnaire_submitted_at, questionnaire_approved_at, ' +
+  'vciso_name, vciso_contact'
 
 /**
  * Resolves the signed-in user to their client company.
@@ -35,7 +48,7 @@ export async function fetchClientContext(): Promise<ClientContext | null> {
 
   const { data, error } = await supabase
     .from('client_users')
-    .select(`client_id, clients(${CLIENT_COLUMNS})`)
+    .select(`client_id, role, clients(${CLIENT_COLUMNS})`)
     .eq('auth_user_id', user.id)
     .maybeSingle()
 
@@ -51,6 +64,9 @@ export async function fetchClientContext(): Promise<ClientContext | null> {
 
   return {
     clientId: data.client_id,
+    role: data.role ?? null,
+    vcisoName: client.vciso_name,
+    vcisoContact: client.vciso_contact,
     companyName: client.company_name,
     onboardingStage: client.onboarding_stage,
     vertical: client.vertical,
