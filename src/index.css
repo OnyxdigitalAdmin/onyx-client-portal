@@ -47,6 +47,10 @@
   --color-scrim: #14112c;
   --color-viewer: #241f4a;
 
+  /* The lifted panel a part-way-through sign-in step sits on, one shade off
+     primary-dark so it reads as raised without becoming a second surface. */
+  --color-step-card: #1e1eb0;
+
   --font-sans: "Shree Devanagari 714", ui-sans-serif, system-ui, sans-serif;
 
   /* The brand's fixed-copy letter-spacing. Applies to designed wordmark-like

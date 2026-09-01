@@ -2,19 +2,28 @@ import { useState } from 'react'
 import type { FormEvent } from 'react'
 import { Navigate, useLocation, useNavigate } from 'react-router-dom'
 import { AuthenticatingScreen } from '../components/AuthenticatingScreen'
-import { BrandField } from '../components/BrandField'
 import { Button } from '../components/Button'
 import { CODE_LENGTH, CodeInput } from '../components/CodeInput'
 import { ErrorNote } from '../components/ErrorNote'
+import { LoginShell, StepCard } from '../components/LoginShell'
 import { supabase } from '../lib/supabaseClient'
 
+/** This step's own low-emphasis actions, beneath its form. */
+const stepLink = [
+  'rounded text-sm text-white/80 underline underline-offset-4 transition-colors',
+  'hover:text-white focus-visible:text-white focus-visible:outline-none',
+  'focus-visible:ring-2 focus-visible:ring-white/60',
+].join(' ')
+
 /**
- * The emailed sign-in code, between the email field and the authenticator.
+ * Step two of three: the emailed sign-in code.
  *
  * Passwordless sign-in makes this the first factor rather than an extra step:
  * the code proves the address, and the authenticator screen that follows
- * proves the person. The card is the authenticator screen's card, unchanged,
- * so the two read as one sequence.
+ * proves the person. It renders in the same panel as the email step, beside
+ * the same carousel, so the three read as one sequence rather than three
+ * screens — but it stays its own route, which is what keeps the guard below,
+ * the back button and a refresh all behaving.
  */
 export default function VerifyEmail() {
   const navigate = useNavigate()
@@ -43,6 +52,8 @@ export default function VerifyEmail() {
       type: 'email',
     })
 
+    // A rejected code holds this step rather than advancing it. The step only
+    // moves on a verified one.
     if (verifyError) {
       setError('That code isn’t right, or it has expired. Check the latest email and try again.')
       setCode('')
@@ -67,45 +78,46 @@ export default function VerifyEmail() {
   if (submitting) return <AuthenticatingScreen />
 
   return (
-    <BrandField compact>
-      <div className="mt-10 w-full max-w-[26rem]">
-        <div className="rounded-3xl border border-white/20 bg-white/[0.04] p-7 sm:p-9">
-          <h1 className="text-2xl tracking-brand text-white">Check your email.</h1>
-          <p className="mt-2 text-sm leading-relaxed text-white/65">
-            We sent a 6-digit code to {email}. Enter it below to continue.
+    <LoginShell step={2}>
+      <StepCard
+        title="Check your email."
+        blurb={`We sent a 6-digit code to ${email}. Enter it below to continue.`}
+      >
+        {error ? (
+          <div className="mt-5">
+            <ErrorNote>{error}</ErrorNote>
+          </div>
+        ) : null}
+
+        {resent && !error ? (
+          <p className="mt-5 rounded-xl border border-white/25 bg-white/[0.06] px-4 py-3 text-sm leading-snug text-white/80">
+            A new code is on its way.
           </p>
+        ) : null}
 
-          {error ? (
-            <div className="mt-6">
-              <ErrorNote>{error}</ErrorNote>
-            </div>
-          ) : null}
+        <form onSubmit={handleSubmit} className="mt-[26px] flex flex-col gap-[18px]">
+          <CodeInput label="6-digit code" value={code} onChange={setCode} />
+          <Button type="submit" disabled={code.length !== CODE_LENGTH} className="w-full sm:w-40">
+            Continue
+          </Button>
+        </form>
 
-          {resent && !error ? (
-            <p className="mt-6 rounded-xl border border-white/25 bg-white/[0.06] px-4 py-3 text-sm leading-snug text-white/80">
-              A new code is on its way.
-            </p>
-          ) : null}
-
-          <form onSubmit={handleSubmit} className="mt-7 flex flex-col gap-5">
-            <CodeInput label="6-digit code" value={code} onChange={setCode} />
-            <Button type="submit" disabled={code.length !== CODE_LENGTH} className="w-full">
-              Continue
-            </Button>
-          </form>
-
-          <button
-            type="button"
-            onClick={() => void resend()}
-            className={[
-              'mt-6 text-sm text-white/70 underline underline-offset-4 transition-colors',
-              'hover:text-white focus-visible:text-white focus-visible:outline-none',
-            ].join(' ')}
-          >
+        <div className="mt-[22px] flex flex-wrap gap-5">
+          <button type="button" onClick={() => void resend()} className={stepLink}>
             Send another code
           </button>
+          {/* Replaces rather than pushes: the way back to step one is this
+              link, and leaving a dead /verify entry behind it only gives the
+              back button somewhere useless to go. */}
+          <button
+            type="button"
+            onClick={() => navigate('/login', { replace: true })}
+            className={stepLink}
+          >
+            Use a different email
+          </button>
         </div>
-      </div>
-    </BrandField>
+      </StepCard>
+    </LoginShell>
   )
 }

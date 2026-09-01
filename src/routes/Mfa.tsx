@@ -2,10 +2,10 @@ import { useCallback, useEffect, useState } from 'react'
 import type { FormEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { AuthenticatingScreen } from '../components/AuthenticatingScreen'
-import { BrandField } from '../components/BrandField'
 import { Button } from '../components/Button'
 import { CODE_LENGTH, CodeInput } from '../components/CodeInput'
 import { ErrorNote } from '../components/ErrorNote'
+import { LoginShell, StepCard } from '../components/LoginShell'
 import { useIsHandheld } from '../hooks/useIsHandheld'
 import type { MfaSetup } from '../lib/mfa'
 import { formatSecret, hasSatisfiedMfa, prepareMfa, verifyMfaCode } from '../lib/mfa'
@@ -14,11 +14,14 @@ import { supabase } from '../lib/supabaseClient'
 type Phase = 'preparing' | 'ready' | 'verifying'
 
 /**
- * The second factor, shown only once a password has succeeded.
+ * Step three of three: the second factor.
  *
  * Enrolment and verification share this screen because they end the same way:
  * a correct 6-digit code. Supabase treats verifying a freshly enrolled factor
  * as confirming it, so a first-time user needs no extra step to finish.
+ *
+ * A session that has already cleared MFA never renders this at all — it is
+ * redirected below — which is why the step indicator can safely say three.
  */
 export default function Mfa() {
   const navigate = useNavigate()
@@ -101,14 +104,14 @@ export default function Mfa() {
   }, [setup])
 
   if (phase === 'verifying') return <AuthenticatingScreen />
-  // Compact, matching the card screen that follows, so the mark doesn't
-  // visibly resize the moment the factors come back.
-  if (phase === 'preparing') return <BrandField compact />
+  // The panel is held exactly as it will look, so nothing moves the moment
+  // the factors come back.
+  if (phase === 'preparing') return <LoginShell step={3} />
 
   if (blocked) {
     return (
-      <BrandField compact>
-        <div className="mt-10 w-full max-w-[26rem]">
+      <LoginShell step={3}>
+        <div className="mt-5 max-w-[360px]">
           {/* Not an ErrorNote: enrolment failing to start is a systems problem,
               not a rejected attempt. It gets stated plainly on the field rather
               than plated in red — the wrong code still gets the Error note. */}
@@ -117,7 +120,7 @@ export default function Mfa() {
           </p>
           <Button
             type="button"
-            className="mt-6 w-full"
+            className="mt-6 w-full sm:w-40"
             onClick={() => {
               void supabase.auth.signOut().then(() => navigate('/login', { replace: true }))
             }}
@@ -125,49 +128,40 @@ export default function Mfa() {
             Back to sign in
           </Button>
         </div>
-      </BrandField>
+      </LoginShell>
     )
   }
 
   const enrolling = setup?.kind === 'enroll'
 
   return (
-    <BrandField compact>
-      <div className="mt-10 w-full max-w-[26rem]">
-        <div className="rounded-3xl border border-white/20 bg-white/[0.04] p-7 sm:p-9">
-          <h1 className="text-2xl tracking-brand text-white">
-            {enrolling ? 'Set up your authenticator.' : 'Verification code'}
-          </h1>
-          <p className="mt-2 text-sm leading-relaxed text-white/65">
-            {enrolling
-              ? 'Onyx requires an authenticator app on every account. Add the portal to yours, then enter the code it shows.'
-              : 'Enter the 6-digit code from your authenticator app.'}
-          </p>
+    <LoginShell step={3}>
+      <StepCard
+        title={enrolling ? 'Set up your authenticator.' : 'Verification code'}
+        blurb={
+          enrolling
+            ? 'Onyx requires an authenticator app on every account. Add the portal to yours, then enter the code it shows.'
+            : 'Enter the 6-digit code from your authenticator app.'
+        }
+      >
+        {setup?.kind === 'enroll' ? (
+          <EnrollmentAid setup={setup} handheld={handheld} copied={copied} onCopy={copySecret} />
+        ) : null}
 
-          {setup?.kind === 'enroll' ? (
-            <EnrollmentAid
-              setup={setup}
-              handheld={handheld}
-              copied={copied}
-              onCopy={copySecret}
-            />
-          ) : null}
+        {error ? (
+          <div className="mt-5">
+            <ErrorNote>{error}</ErrorNote>
+          </div>
+        ) : null}
 
-          {error ? (
-            <div className="mt-6">
-              <ErrorNote>{error}</ErrorNote>
-            </div>
-          ) : null}
-
-          <form onSubmit={handleSubmit} className="mt-7 flex flex-col gap-5">
-            <CodeInput label="6-digit code" value={code} onChange={setCode} />
-            <Button type="submit" disabled={code.length !== CODE_LENGTH} className="w-full">
-              {enrolling ? 'Confirm and continue' : 'Verify'}
-            </Button>
-          </form>
-        </div>
-      </div>
-    </BrandField>
+        <form onSubmit={handleSubmit} className="mt-6 flex flex-col gap-[18px]">
+          <CodeInput label="6-digit code" value={code} onChange={setCode} />
+          <Button type="submit" disabled={code.length !== CODE_LENGTH} className="w-full sm:w-40">
+            {enrolling ? 'Confirm and continue' : 'Verify'}
+          </Button>
+        </form>
+      </StepCard>
+    </LoginShell>
   )
 }
 
@@ -188,7 +182,7 @@ type EnrollmentAidProps = {
  */
 function EnrollmentAid({ setup, handheld, copied, onCopy }: EnrollmentAidProps) {
   return (
-    <div className="mt-7">
+    <div className="mt-6">
       {handheld ? (
         <a
           href={setup.uri}
@@ -206,14 +200,14 @@ function EnrollmentAid({ setup, handheld, copied, onCopy }: EnrollmentAidProps) 
           <img
             src={setup.qrSvg}
             alt="QR code for adding the Onyx client portal to your authenticator app"
-            width={176}
-            height={176}
-            className="size-44 rounded-xl bg-white p-3"
+            width={118}
+            height={118}
+            className="size-[118px] rounded-[10px] bg-white p-[9px]"
           />
         </div>
       )}
 
-      <details className="mt-6 border-t border-white/20 pt-5">
+      <details className="mt-[22px] border-t border-white/25 pt-[18px]">
         <summary
           className={[
             'cursor-pointer list-none text-sm text-white/70 transition-colors',

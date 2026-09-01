@@ -29,7 +29,7 @@ export function CodeInput({
       maxLength={CODE_LENGTH}
       autoFocus
       required
-      placeholder="000000"
+      placeholder="——————"
       className="text-center text-2xl tracking-[0.4em] placeholder:tracking-[0.4em]"
     />
   )
