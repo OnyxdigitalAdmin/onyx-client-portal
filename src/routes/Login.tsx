@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import type { FormEvent } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import bunnyPattern from '../assets/login-bunny-pattern.png'
+import bunnyArt from '../assets/login-tribunny.png'
 import brandWordmark from '../../brand/logos/onyx-digital-text-logo-with-bunnies-transparent.png'
 import { Button } from '../components/Button'
 import { ErrorNote } from '../components/ErrorNote'
@@ -65,14 +65,17 @@ export default function Login() {
     <div className="grid min-h-dvh lg:grid-cols-[minmax(0,30rem)_1fr]">
       <div className="relative isolate flex flex-col overflow-hidden bg-primary-dark px-6 py-10 sm:px-10">
         {/* Pinned to the foot of the panel and heavily faded, so it never sits
-            behind the form. A pattern under an input is a contrast problem
-            dressed as decoration — which is also why it is gone entirely on a
-            handset, where the form takes the whole panel. */}
+            behind the form. Deliberately wider than the panel: the right-hand
+            bunnies are meant to clip at the fold, which is what the panel's
+            overflow-hidden and isolate above are for. */}
         <img
-          src={bunnyPattern}
+          src={bunnyArt}
           alt=""
           aria-hidden="true"
-          className="pointer-events-none absolute inset-x-0 -bottom-8 -z-10 hidden w-full opacity-25 select-none lg:block"
+          className={[
+            'pointer-events-none absolute -left-[6%] -bottom-[2%] -z-10 w-[132%] max-w-none',
+            'opacity-[0.28] select-none lg:-bottom-[4%] lg:w-[124%]',
+          ].join(' ')}
         />
 
         <img

@@ -19,12 +19,14 @@ type FileViewerProps = {
 }
 
 /**
- * The document, full screen, over a dimmed and blurred portal.
+ * The document, full screen, on its own opaque surface.
  *
  * A native <dialog> so the focus trap, the inert background and Escape all
  * come from the platform. Unlike the session-timeout dialog, Escape is a
  * legitimate way out here, so it is left alone. No shadow: the overlay covers
- * the viewport, so there is nothing for it to sit above.
+ * the viewport, so there is nothing for it to sit above. Opaque rather than
+ * blurred — a dashboard showing through a document is a document you have to
+ * read past.
  */
 export function FileViewer({ url, filename, onClose }: FileViewerProps) {
   const dialog = useRef<HTMLDialogElement>(null)
@@ -70,12 +72,12 @@ export function FileViewer({ url, filename, onClose }: FileViewerProps) {
       onCancel={onClose}
       aria-label={filename}
       className={[
-        'm-0 h-dvh max-h-none w-dvw max-w-none border-0 bg-transparent p-0 text-white outline-none',
-        'backdrop:bg-text/65 backdrop:backdrop-blur-md',
+        'm-0 h-dvh max-h-none w-dvw max-w-none border-0 bg-viewer p-0 text-white outline-none',
+        'backdrop:bg-viewer',
       ].join(' ')}
     >
       <div className="flex h-full flex-col">
-        <div className="flex shrink-0 items-start gap-3 bg-primary-dark/95 px-4 py-4 sm:px-6">
+        <div className="flex shrink-0 items-start gap-3 bg-primary-dark px-6 py-4">
           <button
             type="button"
             onClick={onClose}
@@ -248,7 +250,7 @@ function Toolbar({ url, filename, numPages, scale, onScale, onGoToPage }: Toolba
           placeholder="Search"
           aria-label="Search this document"
           className={[
-            'w-28 rounded-full bg-transparent px-3 py-1.5 text-sm text-white',
+            'w-28 rounded-full bg-transparent px-3 py-1.5 text-sm font-bold text-white',
             'placeholder:text-white/60 outline-none',
             'focus-visible:ring-2 focus-visible:ring-white/40',
           ].join(' ')}

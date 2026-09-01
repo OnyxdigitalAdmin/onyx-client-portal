@@ -58,21 +58,12 @@ async function fetchOnboardingData(clientId: string): Promise<OnboardingData> {
   }
 }
 
-const focusRing =
-  'focus-visible:ring-2 focus-visible:ring-white/60 focus-visible:ring-offset-2 ' +
-  'focus-visible:ring-offset-primary-dark focus-visible:outline-none'
-
-const primaryPill =
-  'inline-flex items-center justify-center rounded-full bg-primary px-6 py-3 ' +
-  `text-white transition-colors hover:bg-primary/85 ${focusRing}`
-
 /**
- * Attention reaches only 4.0:1 against primary-dark, under the 4.5:1 floor for
- * text, so on this field it carries as a wash behind full-contrast white — the
- * Amber Wash Rule transposed to the dark surface. The flag stays amber and the
- * words stay readable.
+ * The Amber Wash Rule: amber never carries the words. It sits behind them as a
+ * wash, and the text stays full-contrast — here dark on the white card, as the
+ * flag is now inside one.
  */
-const attentionChip = 'inline-block rounded-full bg-attention/30 px-3 py-1 text-sm text-white'
+const attentionChip = 'inline-block rounded-full bg-attention/25 px-3 py-1 text-sm text-text'
 
 /** The heading that opens each band of the page. */
 function SectionHeading({ children }: { children: string }) {
@@ -88,13 +79,14 @@ function QuestionnaireCard({
   state: Exclude<QuestionnaireState, null>
   dueDate: string | null
 }) {
-  const card = 'rounded-3xl border border-white/20 bg-white/[0.04] p-6 sm:p-8'
+  // The house treatment, shared with the two dialogs. See index.css.
+  const card = 'panel-card'
 
   if (state === 'submitted') {
     return (
       <section className={card}>
-        <h2 className="text-xl text-white">Received — we’re reviewing it.</h2>
-        <p className="mt-2 max-w-[60ch] text-sm leading-relaxed text-white/80">
+        <h2 className="text-xl">Received — we’re reviewing it.</h2>
+        <p className="mt-2 max-w-[60ch] text-sm leading-relaxed text-text/75">
           Thanks for sending it through. We’ll follow up once we’ve been through your answers —
           there’s nothing further you need to do right now.
         </p>
@@ -106,8 +98,8 @@ function QuestionnaireCard({
 
   return (
     <section className={card}>
-      <h2 className="text-xl text-white">Let’s get started</h2>
-      <p className="mt-2 max-w-[60ch] text-sm leading-relaxed text-white/80">
+      <h2 className="text-xl">Let’s get started</h2>
+      <p className="mt-2 max-w-[60ch] text-sm leading-relaxed text-text/75">
         Your onboarding questionnaire tells us how your firm actually works, so everything that
         follows is built around it rather than around a template.
       </p>
@@ -119,12 +111,12 @@ function QuestionnaireCard({
           {overdue ? (
             <span className={attentionChip}>Was due {dueDate}</span>
           ) : (
-            <span className="text-sm text-white/80">Due {dueDate}</span>
+            <span className="text-sm text-text/75">Due {dueDate}</span>
           )}
         </p>
       ) : null}
 
-      <Link to="/questionnaire" className={`mt-6 ${primaryPill}`}>
+      <Link to="/questionnaire" className="panel-button mt-6">
         Start the questionnaire
       </Link>
     </section>
@@ -241,8 +233,14 @@ function ProgressBlock({ title, progress }: { title: string; progress: CategoryP
       <ul className="mt-4 space-y-2.5">
         {progress.items.map((item) => (
           <li key={item.id} className="flex items-start gap-3 text-sm">
+            {/* The slot is the same width in both states, so the two columns
+                of text line up whether an item is done or not. */}
             <span aria-hidden="true" className="mt-px w-5 shrink-0">
-              {item.complete ? <CheckMark /> : null}
+              {item.complete ? (
+                <CheckMark />
+              ) : (
+                <span className="mt-0.5 block size-[15px] rounded-[3px] border-[1.5px] border-white/75" />
+              )}
             </span>
             <span className={item.complete ? 'text-white' : 'text-white/80'}>
               {item.title}
@@ -318,20 +316,27 @@ export function OnboardingView({
         }
       />
 
-      <div className="mx-auto w-full max-w-2xl pt-8 pb-16">
-        <p className="px-6 text-white/80">
-          Stage {client.onboardingStage} of {STAGE_LABELS.length}
-          {stageLabel ? ` — ${stageLabel}` : ''}
-        </p>
+      <div className="w-full pt-8 pb-16">
+        <div className="mx-auto w-full max-w-2xl px-6">
+          <p className="text-white/80">
+            Stage {client.onboardingStage} of {STAGE_LABELS.length}
+            {stageLabel ? ` — ${stageLabel}` : ''}
+          </p>
 
-        <div className="mt-8 space-y-12 px-6">
           {questionnaire ? (
-            <QuestionnaireCard
-              state={questionnaire}
-              dueDate={formatDateOnly(client.questionnaireDueDate)}
-            />
+            <div className="mt-8">
+              <QuestionnaireCard
+                state={questionnaire}
+                dueDate={formatDateOnly(client.questionnaireDueDate)}
+              />
+            </div>
           ) : null}
+        </div>
 
+        {/* The one band that runs wider than the reading column: side by side
+            these two answer "where am I" and "what is left" in a single look,
+            and stacked they are two scrolls apart. */}
+        <div className="mx-auto mt-12 grid w-full max-w-[70rem] gap-12 px-6 md:grid-cols-2 md:gap-14">
           <MilestoneTracker milestones={buildMilestones(client, data.stageEvents)} />
 
           {client.onboardingStage >= PROGRESS_FROM_STAGE ? (
@@ -342,9 +347,10 @@ export function OnboardingView({
           ) : null}
         </div>
 
-        {/* Full column width rather than inset: the library's rules are the
-            file-cabinet, and an indented cabinet stops reading as one. */}
-        <div className="mt-14">
+        {/* The widest band on the page: the library's rules are the
+            file-cabinet, and a cabinet indented to the reading column stops
+            reading as one. */}
+        <div className="mx-auto mt-14 w-full max-w-[73.5rem]">
           <DocumentLibrary
             documents={data.documents}
             companyName={client.companyName}
@@ -359,7 +365,16 @@ export function OnboardingView({
 
 /** The page frame, so the surface is held identically while data resolves. */
 export function OnboardingFrame({ children }: { children: ReactNode }) {
-  return <main className="min-h-dvh bg-primary-dark">{children}</main>
+  return (
+    <main
+      className={[
+        'min-h-dvh bg-linear-to-t from-field-deep from-0%',
+        'via-field-mid via-35% to-primary-dark to-70%',
+      ].join(' ')}
+    >
+      {children}
+    </main>
+  )
 }
 
 export default function Onboarding() {

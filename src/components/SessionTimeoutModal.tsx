@@ -17,7 +17,9 @@ type SessionTimeoutModalProps = {
  * The countdown uses Attention amber, not Error red: an idle session about to
  * end is an expected state, not a failure (the No-Alarm Rule in DESIGN.md).
  * Native <dialog> gives the focus trap and inert background for free; Escape
- * is suppressed so the only way out is the explicit button.
+ * is suppressed so the only way out is the explicit button. The scrim is very
+ * nearly opaque on purpose: a dashboard reading through this one is a dialog
+ * you have to work to parse.
  */
 export function SessionTimeoutModal({ secondsLeft, onStaySignedIn }: SessionTimeoutModalProps) {
   const dialogRef = useRef<HTMLDialogElement>(null)
@@ -33,9 +35,8 @@ export function SessionTimeoutModal({ secondsLeft, onStaySignedIn }: SessionTime
       onCancel={(event) => event.preventDefault()}
       aria-labelledby="session-timeout-title"
       className={[
-        'm-auto w-[min(26rem,calc(100vw-2rem))] rounded-2xl border border-border',
-        'bg-background p-7 text-text shadow-xl',
-        'backdrop:bg-text/65',
+        'panel-card m-auto w-[min(26rem,calc(100vw-2rem))] shadow-xl',
+        'backdrop:bg-scrim/93',
       ].join(' ')}
     >
       <h2 id="session-timeout-title" className="text-xl tracking-brand">
@@ -62,12 +63,7 @@ export function SessionTimeoutModal({ secondsLeft, onStaySignedIn }: SessionTime
         type="button"
         autoFocus
         onClick={onStaySignedIn}
-        className={[
-          'mt-6 w-full rounded-full bg-primary px-6 py-3 text-white',
-          'transition-colors outline-none hover:bg-primary-dark',
-          'focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2',
-          'focus-visible:ring-offset-background',
-        ].join(' ')}
+        className="panel-button mt-6 w-full"
       >
         Stay signed in
       </button>

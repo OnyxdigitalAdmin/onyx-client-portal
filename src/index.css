@@ -36,6 +36,17 @@
   --color-attention: #c68a2e;
   --color-error: #b84c4c;
 
+  /* The two deeper tones the dashboard field falls to as the page runs on.
+     They only ever appear as the lower stops of that one gradient — never as
+     a flat surface, and never as a text or border colour. */
+  --color-field-deep: #01106d;
+  --color-field-mid: #0d14a0;
+
+  /* Modal backdrop, and the file viewer's own surface. Both are deliberately
+     opaque: a translucent scrim let the dashboard read through the dialogs. */
+  --color-scrim: #14112c;
+  --color-viewer: #241f4a;
+
   --font-sans: "Shree Devanagari 714", ui-sans-serif, system-ui, sans-serif;
 
   /* The brand's fixed-copy letter-spacing. Applies to designed wordmark-like
@@ -56,5 +67,29 @@
   body {
     @apply bg-background text-text font-sans;
     letter-spacing: -0.015em;
+  }
+}
+
+@layer components {
+  /* The house dialog treatment: one white card, shared by the questionnaire
+     prompt, the share dialog and the idle-session warning, so the three can
+     never drift apart. All copy inside it is Bold by design — a named
+     exception to the One Weight rule, recorded in DESIGN.md. */
+  .panel-card {
+    @apply rounded-3xl border-[3px] border-primary-dark bg-background p-8 font-bold text-text;
+  }
+
+  /* Its primary action: the fill and the ring are different blues on purpose,
+     which is what separates this pill from the flat one on the brand field. */
+  .panel-button {
+    @apply inline-flex items-center justify-center rounded-full border-[3px] border-primary
+      bg-primary-dark px-6 py-3 text-white transition-colors hover:bg-primary
+      focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary
+      focus-visible:ring-offset-2 focus-visible:ring-offset-background;
+  }
+
+  /* The rules inside a panel card. */
+  .panel-rule {
+    @apply border-primary-dark/35;
   }
 }

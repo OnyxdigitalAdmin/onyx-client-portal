@@ -33,8 +33,8 @@ export function DocumentLibrary({
 
   return (
     <section id={LIBRARY_ANCHOR_ID} className="scroll-mt-4">
-      <div className="flex items-start justify-between gap-4 px-6 pb-6">
-        <h2 className="text-3xl leading-tight tracking-brand text-white">
+      <div className="flex items-start justify-between gap-4 px-6 pb-6 lg:px-8 lg:pb-7">
+        <h2 className="text-3xl leading-[1.05] tracking-[-0.04em] text-white lg:text-[64px]">
           Document
           <br />
           Library.
@@ -48,7 +48,7 @@ export function DocumentLibrary({
             aria-label="Share documents"
             onClick={() => setSharing(true)}
             className={[
-              'flex h-11 w-20 shrink-0 items-center justify-center rounded-full bg-primary',
+              'flex h-[46px] w-28 shrink-0 items-center justify-center rounded-full bg-primary',
               'text-white transition-colors hover:bg-primary/85 outline-none',
               'focus-visible:ring-2 focus-visible:ring-white/60 focus-visible:ring-offset-2',
               'focus-visible:ring-offset-primary-dark',
@@ -73,12 +73,12 @@ export function DocumentLibrary({
       </div>
 
       {library.length === 0 ? (
-        <p className="border-t border-white/30 px-6 py-8 text-white/80">
+        <p className="border-t-[3px] border-white/45 px-6 py-8 text-white/80 lg:px-8">
           Your document library is ready. Documents will appear here as we complete and deliver
           them.
         </p>
       ) : (
-        <ul className="border-t border-white/30">
+        <ul className="border-t-[3px] border-white/45">
           {library.map((doc) => (
             <DocumentRow
               key={doc.id}
@@ -132,25 +132,26 @@ function DocumentRow({
   }, [open, doc.storagePath])
 
   return (
-    <li className="border-b border-white/30">
+    <li className="border-b-[3px] border-white/45">
       <button
         type="button"
         onClick={onToggle}
         aria-expanded={open}
         className={[
-          'flex w-full items-baseline gap-6 px-6 py-4 text-left text-white transition-colors',
+          'flex w-full items-baseline gap-6 px-6 py-4 text-left text-base text-white transition-colors',
+          'lg:gap-11 lg:px-8 lg:py-[26px] lg:text-[22px]',
           'hover:bg-white/[0.06] outline-none focus-visible:bg-white/[0.06]',
           'focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-white/60',
         ].join(' ')}
       >
-        <span className="w-8 shrink-0 tabular-nums text-white/80">
+        <span className="w-8 shrink-0 tabular-nums text-white/80 lg:w-13">
           {String(doc.number).padStart(2, '0')}.
         </span>
         <span className="flex-1">{doc.name}</span>
       </button>
 
       {open ? (
-        <div className="flex flex-wrap items-start gap-6 px-6 pt-1 pb-7 sm:flex-nowrap sm:ps-20">
+        <div className="flex flex-wrap items-start gap-8 px-6 pt-1 pb-8 sm:flex-nowrap sm:pe-8 sm:ps-24">
           {/* No file, no thumbnail: a blank white rectangle where a first page
               should be reads as a broken document rather than a pending one. */}
           {doc.storagePath ? (

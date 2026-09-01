@@ -10,17 +10,17 @@ const SLIDES = [
     text: 'Access your compliance documentation from one place.',
     image: folderIcon,
     /** Decorative: the sentence beside it already says what it depicts. */
-    className: 'w-40 sm:w-52',
+    className: 'w-[290px]',
   },
   {
     text: 'Securely share documents with your regulators and insurers.',
     image: fileShareIcon,
-    className: 'w-48 sm:w-64',
+    className: 'w-[356px]',
   },
   {
     text: 'Monitor your security & compliance posture from one dashboard.',
     image: phoneMockup,
-    className: 'w-32 sm:w-40',
+    className: 'w-56',
   },
 ]
 
@@ -64,7 +64,7 @@ export function LoginCarousel() {
         aria-label="What the portal does"
         className="flex w-full max-w-3xl items-center justify-center gap-10"
       >
-        <p className="max-w-[13ch] text-3xl leading-snug text-primary-dark">{slide.text}</p>
+        <p className="max-w-[13ch] text-4xl leading-[1.3] text-primary-dark">{slide.text}</p>
         <img src={slide.image} alt="" aria-hidden="true" className={slide.className} />
       </div>
 

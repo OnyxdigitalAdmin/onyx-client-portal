@@ -100,12 +100,11 @@ export function ShareDialog({ clientId, onClose }: ShareDialogProps) {
       // margin a native <dialog> centres itself with, so without it the modal
       // sits in the top-left corner.
       className={[
-        'm-auto w-[min(30rem,calc(100vw-2rem))] rounded-2xl border border-border',
-        'bg-background p-7 text-text shadow-xl',
-        'backdrop:bg-text/65',
+        'panel-card m-auto w-[min(30rem,calc(100vw-2rem))] shadow-xl',
+        'backdrop:bg-scrim/93',
       ].join(' ')}
     >
-      <h2 id="share-heading" className="text-xl text-text">
+      <h2 id="share-heading" className="text-xl">
         Who are these documents for?
       </h2>
       <p className="mt-2 text-sm leading-relaxed text-text/70">
@@ -130,11 +129,8 @@ export function ShareDialog({ clientId, onClose }: ShareDialogProps) {
               disabled={busy}
               onClick={() => void generate(audience.value)}
               className={[
-                'w-full rounded-full bg-primary px-6 py-3 text-white transition-colors',
-                'hover:bg-primary-dark focus-visible:outline-none focus-visible:ring-2',
-                'focus-visible:ring-primary focus-visible:ring-offset-2',
-                'focus-visible:ring-offset-background',
-                'disabled:cursor-not-allowed disabled:opacity-55 disabled:hover:bg-primary',
+                'panel-button w-full',
+                'disabled:cursor-not-allowed disabled:opacity-55 disabled:hover:bg-primary-dark',
               ].join(' ')}
             >
               {audience.label}
@@ -145,8 +141,8 @@ export function ShareDialog({ clientId, onClose }: ShareDialogProps) {
       </div>
 
       {active.length > 0 ? (
-        <div className="mt-7 border-t border-border pt-5">
-          <h3 className="text-base text-text">Active links</h3>
+        <div className="panel-rule mt-7 border-t-[3px] pt-5">
+          <h3 className="text-base">Active links</h3>
           <ul className="mt-3 space-y-3">
             {active.map((link) => (
               <li key={link.id} className="flex flex-wrap items-baseline gap-x-3 gap-y-1 text-sm">
